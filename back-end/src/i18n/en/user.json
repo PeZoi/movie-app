@@ -1,0 +1,6 @@
+{
+  "GET_USERS_SUCCESS": "Get all users successfully",
+  "GET_SUCCESS": "Get user successfully",
+  "DELETE_SUCCESS": "Delete user successfully",
+  "UPDATE_SUCCESS": "Update user successfully"
+}

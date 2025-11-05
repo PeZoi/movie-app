@@ -1,0 +1,12 @@
+{
+  "USERNAME_REQUIRED": "Username is required",
+  "EMAIL_REQUIRED": "Email is required",
+  "PHONE_REQUIRED": "Phone number is required",
+  "PASSWORD_REQUIRED": "Password is required",
+  "ADDRESS_REQUIRED": "Address is required",
+  "PASSWORD_STRONG": "Password must contain at least 8 characters, uppercase, lowercase, number, and symbol",
+  "EMAIL_INVALID": "Email is invalid",
+  "PHONE_INVALID": "Phone number is invalid",
+  "ID_INVALID": "ID is invalid",
+  "ID_REQUIRED": "ID is required"
+}

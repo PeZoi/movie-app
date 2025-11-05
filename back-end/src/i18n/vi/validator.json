@@ -1,0 +1,12 @@
+{
+  "USERNAME_REQUIRED": "Tên người dùng là bắt buộc",
+  "EMAIL_REQUIRED": "Email là bắt buộc",
+  "PHONE_REQUIRED": "Số điện thoại là bắt buộc",
+  "PASSWORD_REQUIRED": "Mật khẩu là bắt buộc",
+  "ADDRESS_REQUIRED": "Địa chỉ là bắt buộc",
+  "PASSWORD_STRONG": "Mật khẩu phải chứa ít nhất 8 ký tự, chữ hoa, chữ thường, số và ký hiệu",
+  "EMAIL_INVALID": "Email không hợp lệ",
+  "PHONE_INVALID": "Số điện thoại không hợp lệ",
+  "ID_INVALID": "ID không hợp lệ",
+  "ID_REQUIRED": "ID là bắt buộc"
+}
