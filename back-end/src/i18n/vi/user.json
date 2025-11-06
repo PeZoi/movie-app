@@ -2,5 +2,6 @@
   "GET_USERS_SUCCESS": "Lấy danh sách người dùng thành công",
   "GET_SUCCESS": "Lấy người dùng thành công",
   "DELETE_SUCCESS": "Xoá người dùng thành công",
-  "UPDATE_SUCCESS": "Cập nhật người dùng thành công"
+  "UPDATE_SUCCESS": "Cập nhật người dùng thành công",
+  "USER_NOT_FOUND": "Không tìm thấy người dùng"
 }

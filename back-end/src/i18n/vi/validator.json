@@ -8,5 +8,6 @@
   "EMAIL_INVALID": "Email không hợp lệ",
   "PHONE_INVALID": "Số điện thoại không hợp lệ",
   "ID_INVALID": "ID không hợp lệ",
-  "ID_REQUIRED": "ID là bắt buộc"
+  "ID_REQUIRED": "ID là bắt buộc",
+  "GENDER_INVALID": "Giới tính không hợp lệ"
 }

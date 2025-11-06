@@ -18,7 +18,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(new ResponseInterceptor(), new ErrorInterceptor());
   app.setGlobalPrefix('api/v1', { exclude: [''] }); // Exclude root path from global prefix
   app.useGlobalFilters(new I18nValidationExceptionFilter({ detailedErrors: false }));
   await app.listen(port || 8080);

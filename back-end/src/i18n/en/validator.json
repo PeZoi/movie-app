@@ -8,5 +8,6 @@
   "EMAIL_INVALID": "Email is invalid",
   "PHONE_INVALID": "Phone number is invalid",
   "ID_INVALID": "ID is invalid",
-  "ID_REQUIRED": "ID is required"
+  "ID_REQUIRED": "ID is required",
+  "GENDER_INVALID": "Gender invalid data"
 }
