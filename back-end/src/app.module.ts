@@ -13,6 +13,8 @@ import {
   I18nJsonLoader,
 } from 'nestjs-i18n';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { CountryModule } from './modules/country/country.module';
+import { CategoryModule } from './modules/category/category.module';
 import * as path from 'path';
 
 @Module({
@@ -46,6 +48,8 @@ import * as path from 'path';
       inject: [ConfigService],
     }),
     AuthModule,
+    CountryModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}

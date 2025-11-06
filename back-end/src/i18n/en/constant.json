@@ -1,0 +1,5 @@
+{
+  "CREATE_SUCCESS": "created successfully!",
+  "CREATE_FAIL": "created failed!",
+  "GET_DATA_SUCCESS": "data retrieved successfully!"
+}

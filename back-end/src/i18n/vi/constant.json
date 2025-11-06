@@ -1,0 +1,5 @@
+{
+  "CREATE_SUCCESS": "Thêm dữ liệu thành công",
+  "CREATE_FAIL": "Thêm dữ liệu thất bại",
+  "GET_DATA_SUCCESS": "Lấy dữ liệu thành công"
+}

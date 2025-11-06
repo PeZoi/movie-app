@@ -13,11 +13,7 @@ import { hashPasswordHelper } from '@/helper/util';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-  isEmailExist = async (email: string) => {
-    const user = await this.userModel.exists({ email });
-    if (user) return true;
-    return false;
-  };
+
   i18n = I18nContext.current();
 
   async create(createUserDto: CreateUserDto) {
@@ -38,11 +34,12 @@ export class UsersService {
       gender,
       image,
     });
+
     const message = await i18n.t('auth.REGISTER_SUCCESS');
     return {
       message,
       data: {
-        _id: user._id,
+        result: { _id: user._id },
       },
     };
   }
@@ -106,5 +103,11 @@ export class UsersService {
 
   async findByEmail(email: string) {
     return await this.userModel.findOne({ email });
+  }
+
+  async isEmailExist(email: string) {
+    const user = await this.userModel.exists({ email });
+    if (user) return true;
+    return false;
   }
 }
