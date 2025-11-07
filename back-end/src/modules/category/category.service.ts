@@ -42,8 +42,17 @@ export class CategoryService {
     };
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll() {
+    const i18n = I18nContext.current();
+
+    const result = await this.CategoryModel.find({});
+    const message = await i18n.t('constant.GET_DATA_SUCCESS');
+    return {
+      message,
+      data: {
+        result,
+      },
+    };
   }
 
   findOne(id: number) {
@@ -66,7 +75,6 @@ export class CategoryService {
 
     for (const item of countries) {
       const objectId = new Types.ObjectId(item._id);
-      // Upsert (insert nếu chưa có, update nếu đã có)
       await this.CategoryModel.updateOne(
         { _id: objectId },
         { $set: { name: item.name, slug: item.slug } },
