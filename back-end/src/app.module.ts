@@ -15,6 +15,10 @@ import {
 import { AuthModule } from '@/modules/auth/auth.module';
 import { CountryModule } from './modules/country/country.module';
 import { CategoryModule } from './modules/category/category.module';
+import { ActorModule } from './modules/actor/actor.module';
+import { MovieModule } from './modules/movie/movie.module';
+import { CommentModule } from './modules/comment/comment.module';
+import { EpisodesModule } from './modules/episodes/episodes.module';
 import * as path from 'path';
 
 @Module({
@@ -50,6 +54,10 @@ import * as path from 'path';
     AuthModule,
     CountryModule,
     CategoryModule,
+    ActorModule,
+    MovieModule,
+    CommentModule,
+    EpisodesModule,
   ],
 })
 export class AppModule {}
