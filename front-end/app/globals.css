@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -41,6 +41,15 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Custom colors */
+  --color-bg-base: var(--bg-base);
+  --color-bg-base-2: var(--bg-base-2);
+  --color-text-base: var(--text-base);
+  --color-primary-color: var(--primary-color);
+  --color-primary-color-gradient: var(--primary-color-gradient);
+  --color-primary-color-hover: var(--primary-color-hover);
+  --color-border-color: var(--border-color);
 }
 
 :root {
@@ -76,6 +85,15 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Custom color */
+  --bg-base: #191b24;
+  --bg-base-2: #ffffff10;
+  --text-base: #aaa;
+  --primary-color: #ffd875;
+  --primary-color-gradient: linear-gradient(39deg, rgba(254, 207, 89, 1) 0%, rgba(255, 241, 204, 1) 100%);
+  --primary-color-hover: #ffde8a;
+  --border-color: #ffffff10;
 }
 
 .dark {
@@ -114,9 +132,73 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply box-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-sm leading-4 font-normal;
+  }
+}
+
+@layer components {
+}
+
+@keyframes slide-content {
+  from {
+    transform: translateX(-50px);
+    -webkit-transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes cover-fade {
+  from {
+    transform: translateX(-45%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes hide-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .bg-primary-color-gradient {
+    background-image: var(--primary-color-gradient);
+  }
+  .shadow-primary {
+    box-shadow: 0 5px 10px 10px rgba(255, 218, 125, 0.15);
+  }
+
+  /* Mask Utilities - để có gợi ý khi dùng */
+  .mask-image-top-down {
+    -webkit-mask-image: linear-gradient(0deg, transparent 0, black 20%, black 80%, transparent);
+    mask-image: linear-gradient(0deg, transparent 0, black 20%, black 80%, transparent);
+  }
+
+  /* Animation Utilities - để có gợi ý khi dùng */
+  .animate-slide-content {
+    animation: slide-content 0.5s forwards;
+  }
+
+  .animate-cover-fade {
+    animation: cover-fade 0.5s forwards;
+  }
+
+  .animate-hide-show {
+    animation: hide-show 0.5s forwards;
   }
 }

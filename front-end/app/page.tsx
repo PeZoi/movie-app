@@ -1,10 +1,5 @@
-import { Button } from "@/components/ui/button";
+import Home from '@/app/home/home';
 
-export default function Home() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-      <Button size="sm">Click me</Button>
-    </div>
-  );
+export default function Index() {
+  return <Home />;
 }
