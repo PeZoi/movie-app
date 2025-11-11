@@ -13,10 +13,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
+  async signIn(email: string, pass: string): Promise<any> {
     const i18n = I18nContext.current();
 
-    const user = await this.usersService.findByEmail(username);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
       throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
@@ -26,7 +26,7 @@ export class AuthService {
       throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
     }
 
-    const payload = { sub: user?._id, username: user?.email };
+    const payload = { sub: user?._id, email: user?.email };
     const message = await i18n.t('auth.LOGIN_SUCCESS');
 
     return {

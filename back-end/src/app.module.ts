@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '@/modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import {
   AcceptLanguageResolver,
   QueryResolver,
@@ -20,10 +21,23 @@ import { MovieModule } from './modules/movie/movie.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { EpisodesModule } from './modules/episodes/episodes.module';
 import * as path from 'path';
+import { ErrorInterceptor } from '@/common/interceptors/error.interceptor';
+import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 
 @Module({
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorInterceptor, // NestJS inject I18nService tự động
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+  ],
   imports: [
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
