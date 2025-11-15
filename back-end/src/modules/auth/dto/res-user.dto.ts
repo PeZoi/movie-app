@@ -3,13 +3,13 @@ export class UserResponseDto {
   name: string;
   email: string;
   gender?: string;
-  image?: string;
+  avata?: string;
 
   constructor(user: any) {
     this._id = user._id;
     this.name = user.name;
     this.email = user.email;
     this.gender = user.gender;
-    this.image = user.image;
+    this.avata = user.avata;
   }
 }

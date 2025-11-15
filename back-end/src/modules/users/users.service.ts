@@ -18,7 +18,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const i18n = I18nContext.current();
-    const { name, email, password, gender, image } = createUserDto;
+    const { name, email, password, gender, avata } = createUserDto;
 
     //check email exist
     const isExist = await this.isEmailExist(email);
@@ -32,7 +32,7 @@ export class UsersService {
       email,
       password: hashPassword,
       gender,
-      image,
+      avata,
     });
 
     const message = await i18n.t('auth.REGISTER_SUCCESS');

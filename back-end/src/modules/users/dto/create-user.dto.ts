@@ -29,5 +29,5 @@ export class CreateUserDto {
   gender: string;
 
   @IsOptional()
-  image: string;
+  avata: string;
 }

@@ -3,6 +3,15 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
+@Schema({ _id: false })
+class Avata {
+  @Prop({ default: '1' })
+  group_id: string;
+
+  @Prop({ default: '/avatars/pack1/01.jpg' })
+  path: string;
+}
+
 @Schema({ timestamps: true })
 export class User {
   @Prop()
@@ -14,8 +23,8 @@ export class User {
   @Prop()
   password: string;
 
-  @Prop()
-  image: string;
+  @Prop({ type: Avata, default: () => new Avata() })
+  avata: Avata;
 
   @Prop({ default: 'USER' })
   role: string;
