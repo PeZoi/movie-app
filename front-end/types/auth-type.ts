@@ -1,12 +1,9 @@
+import { UserType } from "@/types/user-type";
+import { ResponseTypeWithExtraFields } from "@/types/response-type";
+
+export type UserAuthResponseType = ResponseTypeWithExtraFields<UserType, { access_token: string }>;
+
 export interface LoginResType {
-  data: {
-      token: string;
-      expiresAt: string;
-      account: {
-          id: number;
-          name: string;
-          email: string;
-      };
-  };
-  message: string;
+  result: UserType;
+  access_token: string;
 }

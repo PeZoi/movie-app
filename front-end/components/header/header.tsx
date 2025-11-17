@@ -1,15 +1,23 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import CategoryButton from '@/components/header/_components/category-button';
 import CountryButton from '@/components/header/_components/country-button';
+import LoginButton from '@/components/header/_components/login-button';
 import Search from '@/components/header/_components/search';
-import { ChevronDown, User } from 'lucide-react';
-/* eslint-disable @next/next/no-img-element */
+import { RO_PHIM_IMG_URL } from '@/constants/env';
+import { useAuthStore } from '@/store/auth-store';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { loadDataFromLocalStorage } = useAuthStore();
+
+  useEffect(() => {
+    loadDataFromLocalStorage();
+  }, [loadDataFromLocalStorage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +36,7 @@ export default function Header() {
       }`}
     >
       <Link href="/" className="flex items-center justify-center">
-        <img src="https://www.rophim.li/images/logo.svg" alt="logo" className="w-auto h-[40px]" />
+        <img src={`${RO_PHIM_IMG_URL}/logo.svg`} alt="logo" className="w-auto h-[40px]" />
       </Link>
       <Search />
       <div className="flex-1 w-full flex items-center justify-between">
@@ -52,9 +60,7 @@ export default function Header() {
             Thêm <ChevronDown size={14} />
           </li>
         </ul>
-        <button className="min-w-32 rounded-full text-black bg-white py-2 px-3 text-base font-medium flex items-center justify-center gap-2 border border-[rgba(255,255,255,.5)] cursor-pointer opacity-90 hover:opacity-100">
-          <User size={16} strokeWidth={3} /> <span>Thành viên</span>
-        </button>
+        <LoginButton />
       </div>
     </div>
   );

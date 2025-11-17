@@ -12,13 +12,13 @@ import { hashPasswordHelper } from '@/helper/util';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   i18n = I18nContext.current();
 
   async create(createUserDto: CreateUserDto) {
     const i18n = I18nContext.current();
-    const { name, email, password, gender, avata } = createUserDto;
+    const { name, email, password, gender, avatar } = createUserDto;
 
     //check email exist
     const isExist = await this.isEmailExist(email);
@@ -32,7 +32,7 @@ export class UsersService {
       email,
       password: hashPassword,
       gender,
-      avata,
+      avatar,
     });
 
     const message = await i18n.t('auth.REGISTER_SUCCESS');

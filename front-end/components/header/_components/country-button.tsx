@@ -15,8 +15,8 @@ export default function CountryButton() {
 
   useEffect(() => {
     const fetchCountries = async () => {
-      const { payload } = await countryAPI.getAllCountries();
-      const countries = payload.data?.result || [];
+      const { data } = await countryAPI.getAllCountries();
+      const countries = data?.result || [];
       setCountries(countries);
     };
     fetchCountries();
@@ -31,7 +31,7 @@ export default function CountryButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-fit p-3 bg-black" align="start" sideOffset={20}>
         <DropdownMenuGroup className="grid grid-cols-3 gap-y-2">
-          {countries.map((country) => (
+          {countries?.map((country) => (
             <Link
               prefetch={false}
               key={country._id}
