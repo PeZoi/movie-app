@@ -72,9 +72,7 @@ export default function SliderMovies() {
                 <Link href="/">
                   <Image src={data.logo} alt="logo" width={260} height={260} className="w-full h-full object-cover" />
                 </Link>
-                <p className="text-primary-color text-[16px] my-4 text-shadow-[0 1px 1px rgba(0,0,0,.2)]">
-                  {data.title}
-                </p>
+                <p className="text-primary-color text-[16px] my-4 text-shadow-[0 1px 1px #000000]">{data.title}</p>
 
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1 px-1.5 py-1 border border-primary-color rounded-sm">
@@ -107,7 +105,7 @@ export default function SliderMovies() {
                   </Link>
                 </div>
 
-                <p className="text-white line-clamp-3 leading-relaxed text-shadow-[0 1px 1px rgba(0,0,0,.2)]">
+                <p className="text-white line-clamp-3 leading-relaxed text-shadow-[0 2px 1px #000000]">
                   {data.description}
                 </p>
 
