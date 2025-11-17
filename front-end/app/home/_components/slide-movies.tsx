@@ -65,16 +65,9 @@ export default function SliderMovies() {
                   alt="slide"
                   width={1000}
                   height={500}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover mask-image-top-down"
                 />
               </div>
-              <div
-                className="pointer-events-none absolute inset-0 animate-cover-fade"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.4) 100%), linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0) 85%, rgba(0,0,0,0.4) 100%)',
-                }}
-              ></div>
               <div className="absolute top-1/2 left-0 -translate-y-1/2 max-w-[700px] py-24 px-12">
                 <Link href="/">
                   <Image src={data.logo} alt="logo" width={260} height={260} className="w-full h-full object-cover" />

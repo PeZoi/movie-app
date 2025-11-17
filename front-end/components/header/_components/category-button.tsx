@@ -15,8 +15,8 @@ export default function CategoryButton() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { payload } = await categoryAPI.getAllCategories();
-      const categories = payload.data?.result || [];
+      const { data } = await categoryAPI.getAllCategories();
+      const categories = data?.result || [];
       setCategories(categories);
     };
     fetchCategories();
@@ -31,7 +31,7 @@ export default function CategoryButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-fit p-3 bg-black" align="start" sideOffset={20}>
         <DropdownMenuGroup className="grid grid-cols-3 gap-y-2">
-          {categories.map((category) => (
+          {categories?.map((category) => (
             <Link
               prefetch={false}
               key={category._id}

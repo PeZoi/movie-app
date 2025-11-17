@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { API_URL } from "@/constants/env"
 import { normalizePath } from "@/lib/utils"
-import { LoginResType } from "@/types/auth-type"
+import { LoginResType, UserAuthResponseType } from "@/types/auth-type"
 import { redirect } from "next/navigation"
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
@@ -122,13 +122,22 @@ const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url:
   // Chỉ set token nếu đang ở client-side
   if (typeof window !== 'undefined') {
     if (['auth/login', 'auth/register'].some(item => item === normalizePath(url))) {
-      clientSessionToken.value = (payload as LoginResType).data.token
+      // Hỗ trợ cả format mới (ResponseType với data.access_token) và format cũ (access_token trực tiếp)
+      const responsePayload = payload as UserAuthResponseType | LoginResType | any
+      const accessToken =
+        responsePayload?.data?.access_token || // Format mới: ResponseType với data.access_token
+        responsePayload?.access_token ||        // Format cũ: access_token trực tiếp
+        ''
+
+      if (accessToken) {
+        clientSessionToken.value = accessToken
+      }
     } else if ('auth/logout' === normalizePath(url)) {
       clientSessionToken.value = ''
     }
   }
 
-  return data
+  return payload
 }
 
 const http = {

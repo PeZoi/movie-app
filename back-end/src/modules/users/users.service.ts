@@ -12,7 +12,7 @@ import { hashPasswordHelper } from '@/helper/util';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   i18n = I18nContext.current();
 
