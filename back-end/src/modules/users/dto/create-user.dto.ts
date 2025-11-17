@@ -14,9 +14,6 @@ export class CreateUserDto {
     {
       minLength: 8,
       minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
     },
     { message: i18nValidationMessage('validator.PASSWORD_STRONG') },
   )
@@ -29,5 +26,5 @@ export class CreateUserDto {
   gender: string;
 
   @IsOptional()
-  avata: string;
+  avatar: string;
 }
