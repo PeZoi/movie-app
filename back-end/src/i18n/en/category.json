@@ -1,4 +1,5 @@
 {
   "CATEGORY_EXIST": "Category already exists",
-  "CATEGORYNAME_REQUIRED": "Category name is required"
+  "CATEGORYNAME_REQUIRED": "Category name is required",
+  "CATEGORY_NOT_FOUND": "Category does not exist"
 }

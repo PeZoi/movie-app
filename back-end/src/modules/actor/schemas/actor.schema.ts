@@ -5,8 +5,14 @@ export type ActorDocument = HydratedDocument<Actor>;
 
 @Schema({ timestamps: true })
 export class Actor {
-  @Prop({ required: true })
+  @Prop()
+  actor_id: number;
+
+  @Prop()
   name: string;
+
+  @Prop()
+  gender: number;
 
   @Prop()
   original_name: string;
@@ -20,11 +26,11 @@ export class Actor {
   @Prop()
   profile_path: string;
 
-  @Prop({ default: 'Male', type: String, enum: ['Male', 'Female', 'Other'] })
-  gender: string;
+  @Prop({ default: 'Male', type: String })
+  gender_name: string;
 
   @Prop()
-  also_known_as: boolean;
+  also_known_as: [];
 }
 
 export const ActorSchema = SchemaFactory.createForClass(Actor);

@@ -14,27 +14,31 @@ export class AuthService {
   ) {}
 
   async signIn(email: string, pass: string): Promise<any> {
-    const i18n = I18nContext.current();
+    try {
+      const i18n = I18nContext.current();
 
-    const user = await this.usersService.findByEmail(email);
+      const user = await this.usersService.findByEmail(email);
 
-    if (!user) {
-      throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
+      if (!user) {
+        throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
+      }
+      const isValidPassword = await comparePasswordHelper(pass, user?.password);
+      if (!isValidPassword) {
+        throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
+      }
+
+      const payload = { sub: user?._id, email: user?.email };
+      const message = await i18n.t('auth.LOGIN_SUCCESS');
+
+      return {
+        message,
+        data: {
+          result: new UserResponseDto(user),
+          access_token: await this.jwtService.signAsync(payload),
+        },
+      };
+    } catch (error) {
+      throw new Error(`signIn: ${error.message}`);
     }
-    const isValidPassword = await comparePasswordHelper(pass, user?.password);
-    if (!isValidPassword) {
-      throw new BadRequestException(i18n.t('auth.LOGIN_FAIL'));
-    }
-
-    const payload = { sub: user?._id, email: user?.email };
-    const message = await i18n.t('auth.LOGIN_SUCCESS');
-
-    return {
-      message,
-      data: {
-        result: new UserResponseDto(user),
-        access_token: await this.jwtService.signAsync(payload),
-      },
-    };
   }
 }

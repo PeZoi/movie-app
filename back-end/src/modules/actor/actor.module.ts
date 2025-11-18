@@ -8,5 +8,6 @@ import { Actor, ActorSchema } from './schemas/actor.schema';
   imports: [MongooseModule.forFeature([{ name: Actor.name, schema: ActorSchema }])],
   controllers: [ActorController],
   providers: [ActorService],
+  exports: [ActorService],
 })
 export class ActorModule {}

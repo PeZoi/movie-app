@@ -1,4 +1,5 @@
 {
   "COUNTRY_EXIST": "Country already exists",
-  "COUNTRYNAME_REQUIRED": "Country name is required"
+  "COUNTRYNAME_REQUIRED": "Country name is required",
+  "COUNTRY_NOT_FOUND": "Country does not exist"
 }

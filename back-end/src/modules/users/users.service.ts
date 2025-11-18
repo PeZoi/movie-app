@@ -12,60 +12,68 @@ import { hashPasswordHelper } from '@/helper/util';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   i18n = I18nContext.current();
 
   async create(createUserDto: CreateUserDto) {
-    const i18n = I18nContext.current();
-    const { name, email, password, gender, avatar } = createUserDto;
+    try {
+      const i18n = I18nContext.current();
+      const { name, email, password, gender, avatar } = createUserDto;
 
-    const isExist = await this.isEmailExist(email);
-    if (isExist) {
-      throw new BadRequestException(i18n.t('auth.EMAIL_EXIST'));
+      const isExist = await this.isEmailExist(email);
+      if (isExist) {
+        throw new BadRequestException(i18n.t('auth.EMAIL_EXIST'));
+      }
+
+      const hashPassword = await hashPasswordHelper(password);
+      const user = await this.userModel.create({
+        name,
+        email,
+        password: hashPassword,
+        gender,
+        avatar,
+      });
+
+      const message = await i18n.t('auth.REGISTER_SUCCESS');
+      return {
+        message,
+        data: {
+          result: { _id: user._id },
+        },
+      };
+    } catch (error) {
+      throw new Error(`Create user: ${error.message}`);
     }
-
-    const hashPassword = await hashPasswordHelper(password);
-    const user = await this.userModel.create({
-      name,
-      email,
-      password: hashPassword,
-      gender,
-      avatar,
-    });
-
-    const message = await i18n.t('auth.REGISTER_SUCCESS');
-    return {
-      message,
-      data: {
-        result: { _id: user._id },
-      },
-    };
   }
 
   async findAll(query: string, current: number, pageSize: number) {
-    const { filter, sort } = aqp(query);
+    try {
+      const { filter, sort } = aqp(query);
 
-    if (filter?.current) delete filter.current;
-    if (filter?.pageSize) delete filter.pageSize;
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+      if (filter?.current) delete filter.current;
+      if (filter?.pageSize) delete filter.pageSize;
+      if (!current) current = 1;
+      if (!pageSize) pageSize = 10;
 
-    const totalItems = await this.userModel.countDocuments(filter);
-    const totalPages = Math.ceil(totalItems / pageSize);
-    const skip = (current - 1) * pageSize;
+      const totalItems = await this.userModel.countDocuments(filter);
+      const totalPages = Math.ceil(totalItems / pageSize);
+      const skip = (current - 1) * pageSize;
 
-    const results = await this.userModel
-      .find(filter)
-      .limit(pageSize)
-      .skip(skip)
-      .select('-password')
-      .sort(sort as any);
+      const results = await this.userModel
+        .find(filter)
+        .limit(pageSize)
+        .skip(skip)
+        .select('-password')
+        .sort(sort as any);
 
-    return {
-      message: await I18nContext.current().t('user.GET_USERS_SUCCESS'),
-      data: { results, totalPages },
-    };
+      return {
+        message: await I18nContext.current().t('user.GET_USERS_SUCCESS'),
+        data: { results, totalPages },
+      };
+    } catch (error) {
+      throw new Error(`Find all user: ${error.message}`);
+    }
   }
 
   findOne(id: number) {
@@ -73,30 +81,38 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto) {
-    const { name, image, gender } = updateUserDto;
-    const result = await this.userModel.updateOne({ _id: updateUserDto._id }, { name, image, gender });
+    try {
+      const { name, image, gender } = updateUserDto;
+      const result = await this.userModel.updateOne({ _id: updateUserDto._id }, { name, image, gender });
 
-    if (result.matchedCount === 0) {
-      throw new BadRequestException(I18nContext.current().t('user.USER_NOT_FOUND'));
-    }
-    return {
-      message: await I18nContext.current().t('user.UPDATE_SUCCESS'),
-      data: {},
-    };
-  }
-
-  async remove(_id: string) {
-    if (mongoose.isValidObjectId(_id)) {
-      const result = await this.userModel.deleteOne({ _id });
-      if (result.deletedCount === 0) {
+      if (result.matchedCount === 0) {
         throw new BadRequestException(I18nContext.current().t('user.USER_NOT_FOUND'));
       }
       return {
-        message: await I18nContext.current().t('user.DELETE_SUCCESS'),
+        message: await I18nContext.current().t('user.UPDATE_SUCCESS'),
         data: {},
       };
-    } else {
-      throw new BadRequestException(I18nContext.current().t('validator.ID_INVALID'));
+    } catch (error) {
+      throw new Error(`Update user: ${error.message}`);
+    }
+  }
+
+  async remove(_id: string) {
+    try {
+      if (mongoose.isValidObjectId(_id)) {
+        const result = await this.userModel.deleteOne({ _id });
+        if (result.deletedCount === 0) {
+          throw new BadRequestException(I18nContext.current().t('user.USER_NOT_FOUND'));
+        }
+        return {
+          message: await I18nContext.current().t('user.DELETE_SUCCESS'),
+          data: {},
+        };
+      } else {
+        throw new BadRequestException(I18nContext.current().t('validator.ID_INVALID'));
+      }
+    } catch (error) {
+      throw new Error(`Remove user: ${error.message}`);
     }
   }
 

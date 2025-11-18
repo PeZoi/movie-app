@@ -1,34 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { MovieService } from './movie.service';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Post()
-  create(@Body() createMovieDto: CreateMovieDto) {
-    return this.movieService.create(createMovieDto);
+  @Get(':slug')
+  async getMovie(@Param('slug') slug: string) {
+    return this.movieService.getMovie(slug);
   }
 
-  @Get()
-  findAll() {
-    return this.movieService.findAll();
+  @Get('category/:slug')
+  async getMovieByCategory(
+    @Param('slug') slug: string,
+    @Query('current') current?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    return this.movieService.getMovieByCategory(slug, current, pageSize);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.movieService.findOne(+id);
+  @Get('country/:slug')
+  async getMovieByCountry(
+    @Param('slug') slug: string,
+    @Query('current') current?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    return this.movieService.getMovieByCountry(slug, current, pageSize);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMovieDto: UpdateMovieDto) {
-    return this.movieService.update(+id, updateMovieDto);
+  @Post(':slug')
+  async syncMovie(@Param('slug') slug: string) {
+    return this.movieService.syncMovie(slug);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.movieService.remove(+id);
+  @Post('/list/:slug')
+  async syncMovieList(@Param('slug') slug: string) {
+    return this.movieService.syncMovieList(slug);
   }
 }

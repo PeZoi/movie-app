@@ -1,19 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type ApisodesDocument = HydratedDocument<Apisodes>;
+export type EpisodesDocument = HydratedDocument<Episodes>;
 
-@Schema({ timestamps: true })
-export class Apisodes {
-  @Prop()
-  server_name: string;
-
-  @Prop()
-  is_ai: boolean;
-
-  @Prop()
-  adult: boolean;
-
+@Schema()
+export class ServerData {
   @Prop()
   name: string;
 
@@ -30,4 +21,21 @@ export class Apisodes {
   link_m3u8: string;
 }
 
-export const ApisodeSchema = SchemaFactory.createForClass(Apisodes);
+export const ServerDataSchema = SchemaFactory.createForClass(ServerData);
+
+@Schema({ timestamps: true })
+export class Episodes {
+  @Prop()
+  server_name: string;
+
+  @Prop()
+  is_ai: boolean;
+
+  @Prop({
+    type: [ServerDataSchema],
+    default: [],
+  })
+  server_data: ServerData[];
+}
+
+export const EpisodeSchema = SchemaFactory.createForClass(Episodes);
