@@ -4,6 +4,7 @@ import { Actor } from '@/modules/actor/schemas/actor.schema';
 import { Category } from '@/modules/category/schemas/category.schema';
 import { Country } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
+import { Images } from '@/modules/image/schema/image.schema';
 
 @Schema({ _id: false })
 class Imdb {
@@ -65,7 +66,8 @@ class MovieItem {
   @Prop() originName?: string;
   @Prop() description?: string;
   @Prop() type?: string;
-  @Prop() status?: string;
+  @Prop({ default: 'ongoing' }) status?: string;
+  @Prop() movie_id?: string;
   @Prop() posterUrl?: string;
   @Prop() thumbUrl?: string;
   @Prop() trailerUrl?: string;
@@ -97,6 +99,9 @@ class MovieItem {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: Episodes.name }], default: [] })
   episodes?: Types.ObjectId[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: Images.name }], default: [] })
+  images?: Types.ObjectId[];
 }
 
 @Schema({ timestamps: true })

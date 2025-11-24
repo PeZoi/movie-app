@@ -7,6 +7,7 @@ import { ActorModule } from '../actor/actor.module';
 import { Category, CategorySchema } from '@/modules/category/schemas/category.schema';
 import { Country, CountrySchema } from '@/modules/country/schemas/country.schema';
 import { Episodes, EpisodeSchema } from '@/modules/episodes/schema/episodes.schema';
+import { Images, ImageSchema } from '@/modules/image/schema/image.schema';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Episodes, EpisodeSchema } from '@/modules/episodes/schema/episodes.sche
     MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
     MongooseModule.forFeature([{ name: Country.name, schema: CountrySchema }]),
     MongooseModule.forFeature([{ name: Episodes.name, schema: EpisodeSchema }]),
+    MongooseModule.forFeature([{ name: Images.name, schema: ImageSchema }]),
     ActorModule,
   ],
   controllers: [MovieController],

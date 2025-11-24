@@ -199,6 +199,11 @@ class MovieItemDto {
   @IsArray()
   @IsString({ each: true })
   episodes?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }
 
 export class CreateMovieDto {

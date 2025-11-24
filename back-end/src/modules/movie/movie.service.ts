@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { Types } from 'mongoose';
 import { I18nContext } from 'nestjs-i18n';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,7 +12,8 @@ import { Movie } from './schemas/movie.schema';
 import { ActorService } from '../actor/actor.service';
 import { Category } from '@/modules/category/schemas/category.schema';
 import { Country } from '@/modules/country/schemas/country.schema';
-import { Episodes, EpisodesDocument } from '@/modules/episodes/schema/episodes.schema';
+import { Episodes } from '@/modules/episodes/schema/episodes.schema';
+import { Images } from '@/modules/image/schema/image.schema';
 
 @Injectable()
 export class MovieService {
@@ -22,6 +22,7 @@ export class MovieService {
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Country.name) private CountryModel: Model<Country>,
     @InjectModel(Episodes.name) private EpisodesModel: Model<Episodes>,
+    @InjectModel(Images.name) private ImagesModel: Model<Images>,
     private readonly ActorService: ActorService,
     private readonly configService: ConfigService,
   ) {}
@@ -164,21 +165,53 @@ export class MovieService {
       const movieData = movieResponse.data;
       if (!movieData) throw new Error('Movie data not found.');
 
-      let peoples = { actors: [], directors: [] };
-
-      if (movieData?.peoples) {
+      let peoples = [];
+      try {
         const { data: peopleResponse } = await axios.get(`${baseUrl}/phim/${slug}/peoples`);
-        peoples = peopleResponse.data.peoples || { actors: [], directors: [] };
+        console.log('🚀 ~ MovieService ~ syncMovie ~ data:', peopleResponse);
+        if (peopleResponse?.success) {
+          peoples = peopleResponse.data.peoples || [];
+        } else {
+          console.log(`API peoples của phim ${slug}: false`);
+        }
+      } catch (error: any) {}
+      const { data: imageResponse } = await axios.get(`${baseUrl}/phim/${slug}/images `);
+      const imageData = imageResponse.data;
+
+      if (!imageData) {
+        throw new Error('Image data not found.');
       }
+
+      const existingImage = await this.ImagesModel.findOne({ slug });
+
+      let savedImageDoc;
+      if (existingImage) {
+        existingImage.tmdb_id = imageData.tmdb_id;
+        existingImage.tmdb_type = imageData.tmdb_type;
+        existingImage.tmdb_season = imageData.tmdb_season;
+        existingImage.slug = imageData.slug || slug;
+        existingImage.imdb_id = imageData.imdb_id;
+        existingImage.image_sizes = imageData.image_sizes;
+        existingImage.images = imageData.images;
+
+        savedImageDoc = await existingImage.save();
+      } else {
+        savedImageDoc = await this.ImagesModel.create({
+          ...imageData,
+          slug,
+        });
+      }
+
+      const imageId = savedImageDoc._id;
 
       const categoryIds = await this.categoryModel
         .find({ _id: { $in: movieData.item.category.map((c) => c.id) } })
         .select('_id')
-        .lean<{ _id: Types.ObjectId }>();
+        .lean();
 
       const counTryIds = await this.CountryModel.find({ _id: { $in: movieData.item.country.map((c) => c.id) } })
         .select('_id')
-        .lean<{ _id: Types.ObjectId }>();
+        .lean();
 
       const episodesData =
         movieData.item.episodes?.map((ep) => ({
@@ -187,9 +220,14 @@ export class MovieService {
           server_data: ep.server_data,
         })) || [];
 
-      const savedEpisodes: EpisodesDocument[] = [];
-      for (const ep of episodesData) {
-        const existing = await this.EpisodesModel.findOne({ server_name: ep.server_name });
+      const episodesDataWithSlug = episodesData.map((ep) => ({
+        ...ep,
+        movie_slug: movieData.item.slug,
+      }));
+
+      const savedEpisodes = [];
+      for (const ep of episodesDataWithSlug) {
+        const existing = await this.EpisodesModel.findOne({ movie_slug: ep.movie_slug });
         if (existing) {
           existing.is_ai = ep.is_ai;
           existing.server_data = ep.server_data;
@@ -199,6 +237,7 @@ export class MovieService {
           savedEpisodes.push(created);
         }
       }
+
       const episodeIds = savedEpisodes.map((e) => e._id);
 
       const dto = plainToInstance(CreateMovieDto, {
@@ -223,13 +262,14 @@ export class MovieService {
           actor: [],
           director: [],
           episodes: [],
+          images: [],
           category: movieData.item.category?.map((c) => c.name),
           country: movieData.item.country?.map((c) => c.name),
         },
       });
       await validateOrReject(dto);
 
-      const [actors] = await Promise.all([this.ActorService.ensureMany(peoples.actors)]);
+      const actors = peoples.length > 0 ? await this.ActorService.ensureMany(peoples) : [];
 
       const updateData = {
         slug: movieData.params.slug,
@@ -256,6 +296,8 @@ export class MovieService {
           category: categoryIds,
           country: counTryIds,
           episodes: episodeIds,
+
+          images: imageId,
         },
       };
 
@@ -266,7 +308,7 @@ export class MovieService {
 
       return updated;
     } catch (error) {
-      throw error;
+      // throw error;
     }
   }
 
@@ -275,7 +317,7 @@ export class MovieService {
       const i18n = I18nContext.current();
 
       const baseUrl = this.configService.get<string>('MOVIE_API_URL');
-      const { data: movieResponse } = await axios.get(`${baseUrl}/${slug}`);
+      const { data: movieResponse } = await axios.get(`${baseUrl}/quoc-gia/${slug}`);
       const movieData = movieResponse.data;
       if (!movieData) throw new Error('Movie data not found.');
       for (const movie of movieData.items) {

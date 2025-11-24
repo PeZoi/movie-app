@@ -23,6 +23,8 @@ import { EpisodesModule } from './modules/episodes/episodes.module';
 import * as path from 'path';
 import { ErrorInterceptor } from '@/common/interceptors/error.interceptor';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
+import { ImageModule } from './modules/image/image.module';
+import { CollectionModule } from './modules/collection/collection.module';
 
 @Module({
   controllers: [AppController],
@@ -72,6 +74,8 @@ import { ResponseInterceptor } from '@/common/interceptors/response.interceptor'
     MovieModule,
     CommentModule,
     EpisodesModule,
+    ImageModule,
+    CollectionModule,
   ],
 })
 export class AppModule {}

@@ -32,3 +32,5 @@ export const generateSlug = (name: string): string => {
     .replace(/-+/g, '-') // gộp nhiều dấu - liền nhau
     .replace(/^-+|-+$/g, ''); // xóa dấu - ở đầu/cuối
 };
+
+export const totalPage = () => {};

@@ -29,6 +29,9 @@ export class Episodes {
   server_name: string;
 
   @Prop()
+  movie_slug: string;
+
+  @Prop()
   is_ai: boolean;
 
   @Prop({

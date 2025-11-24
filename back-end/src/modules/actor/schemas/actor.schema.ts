@@ -5,7 +5,7 @@ export type ActorDocument = HydratedDocument<Actor>;
 
 @Schema({ timestamps: true })
 export class Actor {
-  @Prop()
+  @Prop({ unique: true })
   actor_id: number;
 
   @Prop()
