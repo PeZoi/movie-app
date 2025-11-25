@@ -224,6 +224,7 @@ export class CollectionService {
                 item: 1,
                 slug: 1,
                 'category.name': 1,
+                'category.slug': 1,
                 'images.image_sizes': 1,
                 'images.image': 1,
               },
