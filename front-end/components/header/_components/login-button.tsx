@@ -26,8 +26,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { RO_PHIM_IMG_URL } from '@/constants/env';
 import { useRouter } from 'next/navigation';
-
-type ViewType = 'login' | 'register' | 'forgot-password';
+import DialogAuth from '@/components/dialog-auth';
 
 const MENU_PROFILE_ITEMS = [
   {
@@ -53,47 +52,8 @@ const MENU_PROFILE_ITEMS = [
 ];
 
 export default function LoginButton() {
-  const { handleLoginSuccess, logout, user } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const router = useRouter();
-
-  const [view, setView] = useState<ViewType>('login');
-
-  const handleViewChange = (newView: ViewType) => {
-    setView(newView);
-  };
-
-  const onLoginSubmit = async (data: LoginFormValues) => {
-    try {
-      const response = await authAPI.login(data);
-      if (response.data) {
-        handleLoginSuccess(response.data.result, response.data.access_token);
-        toast.success('Đăng nhập thành công');
-      }
-    } catch (error: unknown) {
-      console.error('Login error:', error);
-    }
-  };
-
-  const onRegisterSubmit = async (data: RegisterFormValues) => {
-    const requestBody: RegisterRequestBody = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-    };
-    try {
-      const response = await authAPI.register(requestBody);
-      if (response.data) {
-        handleLoginSuccess(response.data.result, response.data.access_token);
-      }
-    } catch (error: unknown) {
-      console.error('Register error:', error);
-    }
-  };
-
-  const onForgotPasswordSubmit = (data: ForgotPasswordFormValues) => {
-    console.log('Forgot password data:', data);
-    // TODO: Implement forgot password logic here
-  };
 
   const handleLogout = () => {
     logout();
@@ -152,22 +112,11 @@ export default function LoginButton() {
           </DropdownMenu>
         </div>
       ) : (
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="min-w-32 rounded-full text-black bg-white py-2 px-3 text-base font-medium flex items-center justify-center gap-2 border border-[rgba(255,255,255,.5)] cursor-pointer opacity-90 hover:opacity-100 transition-opacity">
-              <User size={16} strokeWidth={3} /> <span>Thành viên</span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="w-full max-w-md p-0 rounded-xl border-none gap-0 bg-[#1E2545] overflow-hidden">
-            <div className="p-8 space-y-6">
-              {view === 'login' && <LoginForm onViewChange={handleViewChange} onSubmit={onLoginSubmit} />}
-              {view === 'register' && <RegisterForm onViewChange={handleViewChange} onSubmit={onRegisterSubmit} />}
-              {view === 'forgot-password' && (
-                <ForgotPasswordForm onViewChange={handleViewChange} onSubmit={onForgotPasswordSubmit} />
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <DialogAuth>
+          <button className="min-w-32 rounded-full text-black bg-white py-2 px-3 text-base font-medium flex items-center justify-center gap-2 border border-[rgba(255,255,255,.5)] cursor-pointer opacity-90 hover:opacity-100 transition-opacity">
+            <User size={16} strokeWidth={3} /> <span>Thành viên</span>
+          </button>
+        </DialogAuth>
       )}
     </>
   );
