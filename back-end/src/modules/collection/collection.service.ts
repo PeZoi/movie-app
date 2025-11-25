@@ -54,14 +54,16 @@ export class CollectionService {
           let: { filter: '$filter', limitInt: '$limitInt' },
 
           pipeline: [
+            // status
             {
               $match: {
                 $expr: {
-                  $eq: ['$item.status', '$$filter.status'],
+                  $in: ['$item.status', '$$filter.status'],
                 },
               },
             },
 
+            // country
             {
               $lookup: {
                 from: 'countries',
@@ -86,6 +88,40 @@ export class CollectionService {
                 },
               },
             },
+
+            // category
+            {
+              $lookup: {
+                from: 'categories',
+                localField: 'item.category',
+                foreignField: '_id',
+                as: 'category',
+              },
+            },
+            {
+              $match: {
+                $expr: {
+                  $cond: [
+                    {
+                      $gt: [{ $size: { $ifNull: ['$$filter.genre_ids', []] } }, 0],
+                    },
+                    {
+                      $gt: [
+                        {
+                          $size: {
+                            $setIntersection: [{ $ifNull: ['$category.slug', []] }, '$$filter.genre_ids'],
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                    true,
+                  ],
+                },
+              },
+            },
+
+            // image
             {
               $lookup: {
                 from: 'images',
@@ -135,20 +171,12 @@ export class CollectionService {
               },
             },
 
-            {
-              $lookup: {
-                from: 'categories',
-                localField: 'item.category',
-                foreignField: '_id',
-                as: 'categories',
-              },
-            },
-
+            // sort
             {
               $addFields: {
                 finalSortKey: {
                   $cond: [
-                    { $eq: ['$$filter.order', -1] }, // nếu sort giảm dần
+                    { $eq: ['$$filter.order', -1] },
                     {
                       $cond: [
                         { $in: ['$$filter.sort_by', ['updatedAt', 'createdAt']] },
@@ -181,24 +209,37 @@ export class CollectionService {
             { $unwind: '$movies' },
             { $replaceRoot: { newRoot: '$movies' } },
             {
+              $unset: [
+                'item.actor',
+                'item.category',
+                'item.country',
+                'item.episodes',
+                'item.images',
+                'item.description',
+                'limitInt',
+              ],
+            },
+            {
               $project: {
-                'item.name': 1,
-                'item.quality': 1,
-                'item.year': 1,
-                'item.originName': 1,
-                'item.type': 1,
-                'item.lang': 1,
-                'item.time': 1,
+                item: 1,
                 slug: 1,
+                'category.name': 1,
                 'images.image_sizes': 1,
                 'images.image': 1,
-                'categories.name': 1,
               },
             },
 
             { $sort: { updated_at: -1 } },
           ],
           as: 'movies',
+        },
+      },
+      {
+        $unset: 'limitInt',
+      },
+      {
+        $addFields: {
+          totalItem: { $size: '$movies' },
         },
       },
       { $sort: { order: 1 } },

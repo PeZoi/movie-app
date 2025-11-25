@@ -24,7 +24,7 @@ export class CreateCollectionDto {
   @IsObject()
   filter: {
     country_code?: string[];
-    status?: string;
+    status?: string[];
     type?: string;
     top_views?: string;
     limit?: number;
