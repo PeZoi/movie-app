@@ -34,7 +34,7 @@ export class CollectionService {
   async getCollections(page, limit) {
     const skip = (page - 1) * limit;
 
-    const results = await this.CollectionModel.aggregate([
+    const result = await this.CollectionModel.aggregate([
       { $skip: skip },
       { $limit: limit },
       {
@@ -240,14 +240,16 @@ export class CollectionService {
       },
       {
         $addFields: {
-          totalItem: { $size: '$movies' },
+          totalItems: { $size: '$movies' },
         },
       },
       { $sort: { order: 1 } },
     ]).exec();
 
+    const totalItems = await this.CollectionModel.countDocuments({});
+
     return {
-      data: { results },
+      data: { result, totalItems },
     };
   }
 }

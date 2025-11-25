@@ -27,36 +27,36 @@ export class MovieService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getMovie(slug: string) {
-    const i18n = I18nContext.current();
-    const isMovie = await this.findBySlug(slug);
+  // async getMovie(slug: string) {
+  //   const i18n = I18nContext.current();
+  //   const isMovie = await this.findBySlug(slug);
 
-    if (!isMovie) {
-      throw new BadRequestException(i18n.t('movie.MOVIE_NOT_FOUND'));
-    }
+  //   if (!isMovie) {
+  //     throw new BadRequestException(i18n.t('movie.MOVIE_NOT_FOUND'));
+  //   }
 
-    const results = await isMovie.populate([
-      {
-        path: 'item.episodes',
-      },
-      {
-        path: 'item.country',
-        select: 'name',
-      },
-      {
-        path: 'item.category',
-        select: 'name',
-      },
-      {
-        path: 'item.actor',
-        select: 'name',
-      },
-    ]);
-    return {
-      message: await I18nContext.current().t('movie.GET_SUCCESS'),
-      data: { results },
-    };
-  }
+  //   const results = await isMovie.populate([
+  //     {
+  //       path: 'item.episodes',
+  //     },
+  //     {
+  //       path: 'item.country',
+  //       select: 'name',
+  //     },
+  //     {
+  //       path: 'item.category',
+  //       select: 'name',
+  //     },
+  //     {
+  //       path: 'item.actor',
+  //       select: 'name',
+  //     },
+  //   ]);
+  //   return {
+  //     message: await I18nContext.current().t('movie.GET_SUCCESS'),
+  //     data: { results },
+  //   };
+  // }
 
   async getMovieByCategory(slug: string, current: number, pageSize: number) {
     try {
@@ -68,7 +68,7 @@ export class MovieService {
       if (!category) throw new BadRequestException(i18n.t('category.CATEGORY_NOT_FOUND'));
       const skip = (current - 1) * pageSize;
 
-      const results = await this.MovieModel.find({
+      const result = await this.MovieModel.find({
         'item.category': category._id,
       })
         .skip(skip)
@@ -100,7 +100,7 @@ export class MovieService {
       const totalPages = Math.ceil(totalItems / pageSize);
 
       return {
-        data: { results, totalPages, totalItems },
+        data: { result, totalPages, totalItems },
       };
     } catch (error) {
       throw new Error(`Cannot get movies by category: ${error.message}`);
@@ -118,7 +118,7 @@ export class MovieService {
       if (!country) throw new BadRequestException(i18n.t('country.COUNTRY_NOT_FOUND'));
       const skip = (current - 1) * pageSize;
 
-      const results = await this.MovieModel.find({
+      const result = await this.MovieModel.find({
         'item.country': country._id,
       })
         .skip(skip)
@@ -150,7 +150,45 @@ export class MovieService {
       const totalPages = Math.ceil(totalItems / pageSize);
 
       return {
-        data: { results, totalPages, totalItems },
+        data: { result, totalPages, totalItems },
+      };
+    } catch (error) {
+      throw new Error(`Cannot get movies by country: ${error.message}`);
+    }
+  }
+
+  async getMovieById(_id: string) {
+    try {
+      const i18n = I18nContext.current();
+
+      const result = await this.MovieModel.findOne({
+        _id,
+      })
+        .sort({ 'item.year': -1 })
+        .populate([
+          {
+            path: 'item.episodes',
+          },
+          {
+            path: 'item.country',
+            select: 'name',
+          },
+          {
+            path: 'item.category',
+            select: 'name',
+          },
+          {
+            path: 'item.actor',
+            select: 'name',
+          },
+        ])
+        .lean();
+
+      const message = await i18n.t('movie.GET_SUCCESS');
+
+      return {
+        message,
+        data: { result },
       };
     } catch (error) {
       throw new Error(`Cannot get movies by country: ${error.message}`);
@@ -259,6 +297,7 @@ export class MovieService {
           quality: movieData.item.quality,
           lang: movieData.item.lang,
           year: movieData.item.year,
+          imdb: movieData.item.imdb,
           actor: [],
           director: [],
           episodes: [],
@@ -291,6 +330,7 @@ export class MovieService {
           quality: movieData.item.quality,
           lang: movieData.item.lang,
           year: movieData.item.year,
+          imdb: movieData.item.imdb,
           actor: actors,
           director: [],
           category: categoryIds,

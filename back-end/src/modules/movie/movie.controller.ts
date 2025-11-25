@@ -5,10 +5,10 @@ import { MovieService } from './movie.service';
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Get(':slug')
-  async getMovie(@Param('slug') slug: string) {
-    return this.movieService.getMovie(slug);
-  }
+  // @Get('1:slug')
+  // async getMovie(@Param('slug') slug: string) {
+  //   return this.movieService.getMovie(slug);
+  // }
 
   @Get('category/:slug')
   async getMovieByCategory(
@@ -26,6 +26,11 @@ export class MovieController {
     @Query('pageSize') pageSize?: number,
   ) {
     return this.movieService.getMovieByCountry(slug, current, pageSize);
+  }
+
+  @Get(':id')
+  async getMovieById(@Param('id') id: string) {
+    return this.movieService.getMovieById(id);
   }
 
   @Post(':slug')

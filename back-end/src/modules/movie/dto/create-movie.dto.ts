@@ -155,6 +155,7 @@ class MovieItemDto {
   @IsInt()
   view?: number;
 
+  @ValidateNested()
   @IsOptional()
   @IsObject()
   imdb?: {

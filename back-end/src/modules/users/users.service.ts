@@ -60,7 +60,7 @@ export class UsersService {
       const totalPages = Math.ceil(totalItems / pageSize);
       const skip = (current - 1) * pageSize;
 
-      const results = await this.userModel
+      const result = await this.userModel
         .find(filter)
         .limit(pageSize)
         .skip(skip)
@@ -69,7 +69,7 @@ export class UsersService {
 
       return {
         message: await I18nContext.current().t('user.GET_USERS_SUCCESS'),
-        data: { results, totalPages },
+        data: { result, totalPages },
       };
     } catch (error) {
       throw new Error(`Find all user: ${error.message}`);
