@@ -201,4 +201,10 @@
   .animate-hide-show {
     animation: hide-show 0.5s forwards;
   }
+
+  .wrapper {
+    padding-bottom: 10rem;
+    padding-top: 10rem;
+    min-height: calc(100vh - 400px);
+  }
 }

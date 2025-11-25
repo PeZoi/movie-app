@@ -1,3 +1,5 @@
+import BadgeCategory from '@/components/badge-category';
+import BadgeCustom from '@/components/badge-custom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Heart, Info, Play } from 'lucide-react';
 import Image from 'next/image';
@@ -24,7 +26,7 @@ export default function HoverCardMovie({ children, data }: HoverCardMovieProps) 
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="p-5 flex flex-col gap-5">
+          <div className="p-5 flex flex-col gap-3.5">
             <div>
               <p className="font-medium text-white text-lg">{data.name_vi}</p>
               <p className="text-base text-primary-color">{data.name_en}</p>
@@ -53,25 +55,19 @@ export default function HoverCardMovie({ children, data }: HoverCardMovieProps) 
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 px-1.5 py-1 border rounded-sm bg-white">
-                <strong className="text-[12px]">T18</strong>
-              </div>
-              <div className="flex items-center gap-1 px-1.5 py-1 rounded-sm bg-[#ffffff10]">
-                <span className="text-[12px] text-white">2025</span>
-              </div>
-              <div className="flex items-center gap-1 px-1.5 py-1 rounded-sm bg-[#ffffff10]">
-                <span className="text-[12px] text-white">1h 54m</span>
-              </div>
+              <BadgeCustom variant="imdb" className="font-medium">
+                6.6
+              </BadgeCustom>
+              <BadgeCustom variant="filled" className="font-bold">
+                T18
+              </BadgeCustom>
+              <BadgeCustom variant="outline">2012</BadgeCustom>
+              <BadgeCustom variant="outline">Phần 4</BadgeCustom>
+              <BadgeCustom variant="outline">Tập 25</BadgeCustom>
             </div>
             <div className="flex flex-wrap gap-2">
               {data.categories.map((category) => (
-                <Link
-                  key={category}
-                  href={`/category/${category}`}
-                  className="flex items-center gap-1 px-1.5 py-1 rounded-sm bg-[#ffffff10] text-white text-[12px] hover:text-primary-color"
-                >
-                  {category}
-                </Link>
+                <BadgeCategory key={category} category={category} />
               ))}
             </div>
           </div>
