@@ -190,22 +190,22 @@ class MovieItemDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  actor?: string[];
+  actors?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  director?: string[];
+  directors?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  category?: string[];
+  categorys?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  country?: string[];
+  countrys?: string[];
 
   @IsOptional()
   @IsArray()

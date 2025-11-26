@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, isValidObjectId } from 'mongoose';
+import { Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { I18nContext } from 'nestjs-i18n';
@@ -10,8 +10,8 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import axios from 'axios';
 import { Movie } from './schemas/movie.schema';
 import { ActorService } from '../actor/actor.service';
-import { Category } from '@/modules/category/schemas/category.schema';
-import { Country } from '@/modules/country/schemas/country.schema';
+import { Categorys } from '@/modules/category/schemas/category.schema';
+import { Countrys } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
 
@@ -19,8 +19,8 @@ import { Images } from '@/modules/image/schema/image.schema';
 export class MovieService {
   constructor(
     @InjectModel(Movie.name) private MovieModel: Model<Movie>,
-    @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel(Country.name) private CountryModel: Model<Country>,
+    @InjectModel(Categorys.name) private categoryModel: Model<Categorys>,
+    @InjectModel(Countrys.name) private CountryModel: Model<Countrys>,
     @InjectModel(Episodes.name) private EpisodesModel: Model<Episodes>,
     @InjectModel(Images.name) private ImagesModel: Model<Images>,
     private readonly ActorService: ActorService,
@@ -126,22 +126,19 @@ export class MovieService {
     }
   }
 
-  async getMovieById(_id: string) {
+  async getMovieBySlug(slug: string) {
     const i18n = I18nContext.current();
-
-    if (!isValidObjectId(_id)) {
-      throw new BadRequestException(await i18n.t('validator.ID_INVALID'));
-    }
 
     let result;
 
     try {
-      result = await this.MovieModel.findById(_id)
+      result = await this.MovieModel.findOne({ slug })
         .populate([
           { path: 'item.episodes' },
           { path: 'item.country', select: 'name' },
           { path: 'item.category', select: 'name' },
           { path: 'item.actor', select: 'name' },
+          { path: 'item.images', select: 'name' },
         ])
         .lean();
     } catch (error) {
@@ -319,7 +316,7 @@ export class MovieService {
       const i18n = I18nContext.current();
 
       const baseUrl = this.configService.get<string>('MOVIE_API_URL');
-      const { data: movieResponse } = await axios.get(`${baseUrl}/danh-sach/${slug}`);
+      const { data: movieResponse } = await axios.get(`${baseUrl}/quoc-gia/${slug}`);
       const movieData = movieResponse.data;
       if (!movieData) throw new Error('Movie data not found.');
       for (const movie of movieData.items) {

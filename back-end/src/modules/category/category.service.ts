@@ -7,14 +7,14 @@ import { HttpService } from '@nestjs/axios';
 import { Model, Types } from 'mongoose';
 import { I18nContext } from 'nestjs-i18n';
 
-import { Category } from './schemas/category.schema';
+import { Categorys } from './schemas/category.schema';
 import { generateSlug } from '@/helper/util';
 
 @Injectable()
 export class CategoryService {
   constructor(
     private readonly httpService: HttpService,
-    @InjectModel(Category.name) private CategoryModel: Model<Category>,
+    @InjectModel(Categorys.name) private CategoryModel: Model<Categorys>,
   ) {}
   async create(createCategoryDto: CreateCategoryDto) {
     const i18n = I18nContext.current();

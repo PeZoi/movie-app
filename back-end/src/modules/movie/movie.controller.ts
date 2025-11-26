@@ -28,9 +28,9 @@ export class MovieController {
     return this.movieService.getMovieByCountry(slug, current, pageSize);
   }
 
-  @Get(':id')
-  async getMovieById(@Param('id') id: string) {
-    return this.movieService.getMovieById(id);
+  @Get(':slug')
+  async getMovieById(@Param('slug') slug: string) {
+    return this.movieService.getMovieBySlug(slug);
   }
 
   @Post(':slug')

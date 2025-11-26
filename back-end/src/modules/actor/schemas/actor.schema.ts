@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type ActorDocument = HydratedDocument<Actor>;
+export type ActorDocument = HydratedDocument<Actors>;
 
 @Schema({ timestamps: true })
-export class Actor {
+export class Actors {
   @Prop({ unique: true })
   actor_id: number;
 
@@ -33,4 +33,4 @@ export class Actor {
   also_known_as: [];
 }
 
-export const ActorSchema = SchemaFactory.createForClass(Actor);
+export const ActorSchema = SchemaFactory.createForClass(Actors);

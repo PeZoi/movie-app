@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Actor } from '@/modules/actor/schemas/actor.schema';
-import { Category } from '@/modules/category/schemas/category.schema';
-import { Country } from '@/modules/country/schemas/country.schema';
+import { Actors } from '@/modules/actor/schemas/actor.schema';
+import { Categorys } from '@/modules/category/schemas/category.schema';
+import { Countrys } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
 
@@ -88,14 +88,14 @@ class MovieItem {
   @Prop({ type: Created }) created?: Created;
   @Prop({ type: Modified }) modified?: Modified;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: Actor.name }], default: [] })
-  actor?: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: Actors.name }], default: [] })
+  actors?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: Category.name }], default: [] })
-  category?: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: Categorys.name }], default: [] })
+  categorys?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: Country.name }], default: [] })
-  country?: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: Countrys.name }], default: [] })
+  countrys?: Types.ObjectId[];
 
   @Prop({ type: [{ type: Types.ObjectId, ref: Episodes.name }], default: [] })
   episodes?: Types.ObjectId[];

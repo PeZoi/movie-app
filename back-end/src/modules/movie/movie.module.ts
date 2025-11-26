@@ -4,16 +4,16 @@ import { MovieController } from './movie.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Movie, MovieSchema } from './schemas/movie.schema';
 import { ActorModule } from '../actor/actor.module';
-import { Category, CategorySchema } from '@/modules/category/schemas/category.schema';
-import { Country, CountrySchema } from '@/modules/country/schemas/country.schema';
+import { Categorys, CategorySchema } from '@/modules/category/schemas/category.schema';
+import { Countrys, CountrySchema } from '@/modules/country/schemas/country.schema';
 import { Episodes, EpisodeSchema } from '@/modules/episodes/schema/episodes.schema';
 import { Images, ImageSchema } from '@/modules/image/schema/image.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
-    MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
-    MongooseModule.forFeature([{ name: Country.name, schema: CountrySchema }]),
+    MongooseModule.forFeature([{ name: Categorys.name, schema: CategorySchema }]),
+    MongooseModule.forFeature([{ name: Countrys.name, schema: CountrySchema }]),
     MongooseModule.forFeature([{ name: Episodes.name, schema: EpisodeSchema }]),
     MongooseModule.forFeature([{ name: Images.name, schema: ImageSchema }]),
     ActorModule,

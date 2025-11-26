@@ -5,10 +5,10 @@ import * as mongoose from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 import { Movie } from '../../movie/schemas/movie.schema';
 
-export type CommentDocument = HydratedDocument<Comment>;
+export type CommentDocument = HydratedDocument<Comments>;
 
 @Schema({ timestamps: true })
-export class Comment {
+export class Comments {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true })
   movie: Movie;
 
@@ -24,4 +24,4 @@ export class Comment {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null })
   parentCommentId?: Types.ObjectId | null;
 }
-export const CommentSchema = SchemaFactory.createForClass(Comment);
+export const CommentSchema = SchemaFactory.createForClass(Comments);
