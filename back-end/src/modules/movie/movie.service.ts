@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, isValidObjectId } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { I18nContext } from 'nestjs-i18n';
@@ -26,37 +26,6 @@ export class MovieService {
     private readonly ActorService: ActorService,
     private readonly configService: ConfigService,
   ) {}
-
-  // async getMovie(slug: string) {
-  //   const i18n = I18nContext.current();
-  //   const isMovie = await this.findBySlug(slug);
-
-  //   if (!isMovie) {
-  //     throw new BadRequestException(i18n.t('movie.MOVIE_NOT_FOUND'));
-  //   }
-
-  //   const results = await isMovie.populate([
-  //     {
-  //       path: 'item.episodes',
-  //     },
-  //     {
-  //       path: 'item.country',
-  //       select: 'name',
-  //     },
-  //     {
-  //       path: 'item.category',
-  //       select: 'name',
-  //     },
-  //     {
-  //       path: 'item.actor',
-  //       select: 'name',
-  //     },
-  //   ]);
-  //   return {
-  //     message: await I18nContext.current().t('movie.GET_SUCCESS'),
-  //     data: { results },
-  //   };
-  // }
 
   async getMovieByCategory(slug: string, current: number, pageSize: number) {
     try {
@@ -158,41 +127,35 @@ export class MovieService {
   }
 
   async getMovieById(_id: string) {
-    try {
-      const i18n = I18nContext.current();
+    const i18n = I18nContext.current();
 
-      const result = await this.MovieModel.findOne({
-        _id,
-      })
-        .sort({ 'item.year': -1 })
+    if (!isValidObjectId(_id)) {
+      throw new BadRequestException(await i18n.t('validator.ID_INVALID'));
+    }
+
+    let result;
+
+    try {
+      result = await this.MovieModel.findById(_id)
         .populate([
-          {
-            path: 'item.episodes',
-          },
-          {
-            path: 'item.country',
-            select: 'name',
-          },
-          {
-            path: 'item.category',
-            select: 'name',
-          },
-          {
-            path: 'item.actor',
-            select: 'name',
-          },
+          { path: 'item.episodes' },
+          { path: 'item.country', select: 'name' },
+          { path: 'item.category', select: 'name' },
+          { path: 'item.actor', select: 'name' },
         ])
         .lean();
-
-      const message = await i18n.t('movie.GET_SUCCESS');
-
-      return {
-        message,
-        data: { result },
-      };
     } catch (error) {
-      throw new Error(`Cannot get movies by country: ${error.message}`);
+      throw new InternalServerErrorException(error.message);
     }
+
+    if (!result) {
+      throw new NotFoundException(i18n.t('movie.MOVIE_NOT_FOUND'));
+    }
+
+    return {
+      message: await i18n.t('movie.GET_SUCCESS'),
+      data: { result },
+    };
   }
 
   async syncMovie(slug: string) {
@@ -336,7 +299,6 @@ export class MovieService {
           category: categoryIds,
           country: counTryIds,
           episodes: episodeIds,
-
           images: imageId,
         },
       };
@@ -357,7 +319,7 @@ export class MovieService {
       const i18n = I18nContext.current();
 
       const baseUrl = this.configService.get<string>('MOVIE_API_URL');
-      const { data: movieResponse } = await axios.get(`${baseUrl}/quoc-gia/${slug}`);
+      const { data: movieResponse } = await axios.get(`${baseUrl}/danh-sach/${slug}`);
       const movieData = movieResponse.data;
       if (!movieData) throw new Error('Movie data not found.');
       for (const movie of movieData.items) {

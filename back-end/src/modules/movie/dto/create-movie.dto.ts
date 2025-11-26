@@ -75,6 +75,21 @@ class ParamsDto {
   @IsString()
   slug: string;
 }
+
+class ImdbDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsInt()
+  vote_average?: number;
+
+  @IsOptional()
+  @IsInt()
+  vote_count?: number;
+}
+
 class MovieItemDto {
   @IsString()
   name: string;
@@ -155,14 +170,10 @@ class MovieItemDto {
   @IsInt()
   view?: number;
 
-  @ValidateNested()
   @IsOptional()
-  @IsObject()
-  imdb?: {
-    id?: string;
-    vote_average?: number;
-    vote_count?: number;
-  };
+  @ValidateNested()
+  @Type(() => ImdbDto)
+  imdb?: ImdbDto;
 
   @IsOptional()
   @IsObject()

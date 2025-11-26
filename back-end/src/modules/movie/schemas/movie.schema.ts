@@ -84,7 +84,7 @@ class MovieItem {
   @Prop() year?: number;
   @Prop() view?: number;
 
-  @Prop({ type: Imdb }) imdb?: Imdb;
+  @Prop({ type: Imdb }) imdb: Imdb;
   @Prop({ type: Created }) created?: Created;
   @Prop({ type: Modified }) modified?: Modified;
 
