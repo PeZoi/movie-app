@@ -3,12 +3,12 @@ import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Categorys, CategorySchema } from './schemas/category.schema';
+import { Category, CategorySchema } from './schemas/category.schema';
 
 @Module({
   controllers: [CategoryController],
   providers: [CategoryService],
   exports: [CategoryService],
-  imports: [HttpModule, MongooseModule.forFeature([{ name: Categorys.name, schema: CategorySchema }])],
+  imports: [HttpModule, MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }])],
 })
 export class CategoryModule {}

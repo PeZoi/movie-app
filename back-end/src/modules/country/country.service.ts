@@ -7,13 +7,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { generateSlug } from '@/helper/util';
-import { Countrys } from './schemas/country.schema';
+import { Country } from './schemas/country.schema';
 
 @Injectable()
 export class CountryService {
   constructor(
     private readonly httpService: HttpService,
-    @InjectModel(Countrys.name) private countryModel: Model<Countrys>,
+    @InjectModel(Country.name) private countryModel: Model<Country>,
   ) {}
 
   async create(createCountryDto: CreateCountryDto) {

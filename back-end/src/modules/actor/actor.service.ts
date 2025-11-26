@@ -5,10 +5,10 @@ import { Types } from 'mongoose';
 
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
-import { Actors } from './schemas/actor.schema';
+import { Actor } from './schemas/actor.schema';
 @Injectable()
 export class ActorService {
-  constructor(@InjectModel(Actors.name) private ActorModel: Model<Actors>) {}
+  constructor(@InjectModel(Actor.name) private ActorModel: Model<Actor>) {}
 
   create(createActorDto: CreateActorDto) {
     return 'This action adds a new actor';

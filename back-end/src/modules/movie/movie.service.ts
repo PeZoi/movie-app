@@ -10,8 +10,8 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import axios from 'axios';
 import { Movie } from './schemas/movie.schema';
 import { ActorService } from '../actor/actor.service';
-import { Categorys } from '@/modules/category/schemas/category.schema';
-import { Countrys } from '@/modules/country/schemas/country.schema';
+import { Category } from '@/modules/category/schemas/category.schema';
+import { Country } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
 
@@ -19,8 +19,8 @@ import { Images } from '@/modules/image/schema/image.schema';
 export class MovieService {
   constructor(
     @InjectModel(Movie.name) private MovieModel: Model<Movie>,
-    @InjectModel(Categorys.name) private categoryModel: Model<Categorys>,
-    @InjectModel(Countrys.name) private CountryModel: Model<Countrys>,
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(Country.name) private CountryModel: Model<Country>,
     @InjectModel(Episodes.name) private EpisodesModel: Model<Episodes>,
     @InjectModel(Images.name) private ImagesModel: Model<Images>,
     private readonly ActorService: ActorService,
