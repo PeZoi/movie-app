@@ -135,10 +135,10 @@ export class MovieService {
       result = await this.MovieModel.findOne({ slug })
         .populate([
           { path: 'item.episodes' },
-          { path: 'item.country', select: 'name' },
-          { path: 'item.category', select: 'name' },
-          { path: 'item.actor', select: 'name' },
-          { path: 'item.images', select: 'name' },
+          { path: 'item.country' },
+          { path: 'item.category' },
+          { path: 'item.actor' },
+          { path: 'item.images' },
         ])
         .lean();
     } catch (error) {
@@ -316,7 +316,7 @@ export class MovieService {
       const i18n = I18nContext.current();
 
       const baseUrl = this.configService.get<string>('MOVIE_API_URL');
-      const { data: movieResponse } = await axios.get(`${baseUrl}/quoc-gia/${slug}`);
+      const { data: movieResponse } = await axios.get(`${baseUrl}/danh-sach/${slug}`);
       const movieData = movieResponse.data;
       if (!movieData) throw new Error('Movie data not found.');
       for (const movie of movieData.items) {
