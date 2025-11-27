@@ -25,6 +25,7 @@ import { ErrorInterceptor } from '@/common/interceptors/error.interceptor';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { ImageModule } from './modules/image/image.module';
 import { CollectionModule } from './modules/collection/collection.module';
+import { ReplyModule } from './modules/reply/reply.module';
 
 @Module({
   controllers: [AppController],
@@ -76,6 +77,7 @@ import { CollectionModule } from './modules/collection/collection.module';
     EpisodesModule,
     ImageModule,
     CollectionModule,
+    ReplyModule,
   ],
 })
 export class AppModule {}
