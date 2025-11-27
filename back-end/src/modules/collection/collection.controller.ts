@@ -12,7 +12,7 @@ export class CollectionController {
   }
 
   @Get('list')
-  async getCollections(@Query('page') page: number = 1, @Query('limit') limit: number = 4) {
-    return this.collectionService.getCollections(page, limit);
+  async getCollections(@Query('current') current: number = 1, @Query('pageSize') pageSize: number = 4) {
+    return this.collectionService.getCollections(current, pageSize);
   }
 }

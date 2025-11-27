@@ -31,12 +31,12 @@ export class CollectionService {
     };
   }
 
-  async getCollections(page, limit) {
-    const skip = (page - 1) * limit;
+  async getCollections(current, pageSize) {
+    const skip = (current - 1) * pageSize;
 
     const result = await this.CollectionModel.aggregate([
       { $skip: skip },
-      { $limit: limit },
+      { $limit: pageSize },
       {
         $addFields: {
           movies: { $slice: ['$moviesFull', '$limitInt'] },

@@ -14,6 +14,7 @@ import { Category } from '@/modules/category/schemas/category.schema';
 import { Country } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
+import { Actor } from '@/modules/actor/schemas/actor.schema';
 
 @Injectable()
 export class MovieService {
@@ -23,6 +24,7 @@ export class MovieService {
     @InjectModel(Country.name) private CountryModel: Model<Country>,
     @InjectModel(Episodes.name) private EpisodesModel: Model<Episodes>,
     @InjectModel(Images.name) private ImagesModel: Model<Images>,
+    @InjectModel(Actor.name) private ActorModel: Model<Actor>,
     private readonly ActorService: ActorService,
     private readonly configService: ConfigService,
   ) {}
@@ -120,6 +122,47 @@ export class MovieService {
 
       return {
         data: { result, totalPages, totalItems },
+      };
+    } catch (error) {
+      throw new Error(`Cannot get movies by country: ${error.message}`);
+    }
+  }
+
+  async getMovieByActor(_id: string) {
+    try {
+      const i18n = I18nContext.current();
+
+      const actor = await this.ActorModel.findOne({ _id }).select('_id').lean();
+      if (!actor) throw new BadRequestException(i18n.t('country.COUNTRY_NOT_FOUND'));
+
+      const result = await this.MovieModel.find({
+        'item.actor': actor._id,
+      })
+        .populate([
+          {
+            path: 'item.episodes',
+          },
+          {
+            path: 'item.country',
+            select: 'name',
+          },
+          {
+            path: 'item.category',
+            select: 'name',
+          },
+          {
+            path: 'item.actor',
+            select: 'name',
+          },
+        ])
+        .lean();
+
+      const totalItems = await this.MovieModel.countDocuments({
+        'item.country': actor._id,
+      });
+
+      return {
+        data: { result },
       };
     } catch (error) {
       throw new Error(`Cannot get movies by country: ${error.message}`);
