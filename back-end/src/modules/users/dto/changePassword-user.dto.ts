@@ -14,4 +14,7 @@ export class ChangePasswordDto {
     { message: i18nValidationMessage('validator.PASSWORD_STRONG') },
   )
   newPassword: string;
+
+  @IsNotEmpty()
+  confirmPassword: string;
 }

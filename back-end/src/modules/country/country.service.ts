@@ -63,18 +63,6 @@ export class CountryService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} country`;
-  }
-
-  update(id: number, updateCountryDto: UpdateCountryDto) {
-    return `This action updates a #${id} country`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} country`;
-  }
-
   async isCountryExist(slug: string) {
     const country = await this.countryModel.exists({ slug });
     if (country) return true;

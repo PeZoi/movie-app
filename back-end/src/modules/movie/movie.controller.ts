@@ -1,11 +1,13 @@
 import { Controller, Get, Post, Param, Query } from '@nestjs/common';
-import { MovieService } from './movie.service';
 
+import { MovieService } from './movie.service';
+import { Public } from '@/decorator/customize';
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
   @Get('category/:slug')
+  @Public()
   async getMovieByCategory(
     @Param('slug') slug: string,
     @Query('current') current?: number,
@@ -15,6 +17,7 @@ export class MovieController {
   }
 
   @Get('country/:slug')
+  @Public()
   async getMovieByCountry(
     @Param('slug') slug: string,
     @Query('current') current?: number,
@@ -24,21 +27,25 @@ export class MovieController {
   }
 
   @Get('actor/:id')
+  @Public()
   async getMovieByActor(@Param('id') id: string) {
     return this.movieService.getMovieByActor(id);
   }
 
   @Get(':slug')
+  @Public()
   async getMovieById(@Param('slug') slug: string) {
     return this.movieService.getMovieBySlug(slug);
   }
 
   @Post(':slug')
+  @Public()
   async syncMovie(@Param('slug') slug: string) {
     return this.movieService.syncMovie(slug);
   }
 
   @Post('/list/:slug')
+  @Public()
   async syncMovieList(@Param('slug') slug: string) {
     return this.movieService.syncMovieList(slug);
   }

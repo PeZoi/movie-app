@@ -1,10 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from '@/modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import {
   AcceptLanguageResolver,
   QueryResolver,
@@ -13,6 +10,11 @@ import {
   I18nModule,
   I18nJsonLoader,
 } from 'nestjs-i18n';
+import * as path from 'path';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UsersModule } from '@/modules/users/users.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { CountryModule } from './modules/country/country.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -20,12 +22,12 @@ import { ActorModule } from './modules/actor/actor.module';
 import { MovieModule } from './modules/movie/movie.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { EpisodesModule } from './modules/episodes/episodes.module';
-import * as path from 'path';
 import { ErrorInterceptor } from '@/common/interceptors/error.interceptor';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { ImageModule } from './modules/image/image.module';
 import { CollectionModule } from './modules/collection/collection.module';
 import { ReplyModule } from './modules/reply/reply.module';
+import { JwtAuthGuard } from '@/modules/auth/passport/jwt-auth.guard';
 
 @Module({
   controllers: [AppController],
@@ -34,11 +36,15 @@ import { ReplyModule } from './modules/reply/reply.module';
 
     {
       provide: APP_INTERCEPTOR,
-      useClass: ErrorInterceptor, // NestJS inject I18nService tự động
+      useClass: ErrorInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
   imports: [
