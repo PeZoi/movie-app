@@ -2,6 +2,7 @@ import { Controller, Get, Post, Param, Query } from '@nestjs/common';
 
 import { MovieService } from './movie.service';
 import { Public } from '@/decorator/customize';
+import { MovieFilterDto } from '@/modules/movie/dto/filter-movie.dto';
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
@@ -30,6 +31,12 @@ export class MovieController {
   @Public()
   async getMovieByActor(@Param('id') id: string) {
     return this.movieService.getMovieByActor(id);
+  }
+
+  @Get('filter')
+  @Public()
+  async getMovieFilter(@Query() dto: MovieFilterDto) {
+    return this.movieService.getMovieFilter(dto);
   }
 
   @Get(':slug')

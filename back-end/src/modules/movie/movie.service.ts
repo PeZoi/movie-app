@@ -15,6 +15,7 @@ import { Country } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
 import { Actor } from '@/modules/actor/schemas/actor.schema';
+import { MovieFilterDto } from '@/modules/movie/dto/filter-movie.dto';
 
 @Injectable()
 export class MovieService {
@@ -195,6 +196,150 @@ export class MovieService {
     return {
       message: await i18n.t('movie.GET_SUCCESS'),
       data: { result },
+    };
+  }
+
+  async getMovieFilter(dto: MovieFilterDto) {
+    const { countries, categories, years, type, rating, sort = 'updated_at', page = 1, pageSize = 20 } = dto;
+    const skip = (Number(page) - 1) * Number(pageSize);
+    const limit = Number(pageSize);
+
+    const parseList = (str) => (str ? str.split(',').filter(Boolean) : []);
+
+    const countryArr = parseList(countries);
+    const categoriArr = parseList(categories);
+    const yearArr = parseList(years).map((y) => Number(y));
+
+    const sortField = sort === 'year' ? 'item.year' : sort === 'created_at' ? 'createdAt' : 'updatedAt';
+
+    const result = await this.MovieModel.aggregate([
+      { $lookup: { from: 'countries', localField: 'item.country', foreignField: '_id', as: 'country_info' } },
+      { $unwind: '$country_info' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'item.category',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $lookup: {
+          from: 'images',
+          localField: 'item.images',
+          foreignField: '_id',
+          as: 'images',
+        },
+      },
+      {
+        $addFields: {
+          filterCountries: countryArr,
+          filterCategories: categoriArr,
+          filterYears: yearArr,
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $and: [
+              // COUNTRY FILTER
+              {
+                $cond: [
+                  { $gt: [{ $size: '$filterCountries' }, 0] },
+                  { $in: ['$country_info.slug', '$filterCountries'] },
+                  true,
+                ],
+              },
+
+              // CATEGORY FILTER
+              {
+                $cond: [
+                  { $gt: [{ $size: '$filterCategories' }, 0] },
+                  {
+                    $gt: [
+                      {
+                        $size: {
+                          $setIntersection: ['$category.slug', '$filterCategories'],
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                  true,
+                ],
+              },
+
+              // YEAR FILTER
+
+              {
+                $cond: [{ $gt: [{ $size: '$filterYears' }, 0] }, { $in: ['$item.year', '$filterYears'] }, true],
+              },
+              ...(type ? [{ $eq: ['$item.type', type] }] : [{ $or: [true] }]),
+            ],
+          },
+        },
+      },
+
+      // RANDOM ONLY IMAGE
+      {
+        $addFields: {
+          images: {
+            $map: {
+              input: '$images',
+              as: 'imgDoc',
+              in: {
+                $mergeObjects: [
+                  '$$imgDoc',
+                  {
+                    image: {
+                      $let: {
+                        vars: {
+                          onlyBackdrop: {
+                            $filter: {
+                              input: '$$imgDoc.images',
+                              as: 'img',
+                              cond: { $eq: ['$$img.type', 'backdrop'] },
+                            },
+                          },
+                        },
+                        in: {
+                          $arrayElemAt: [
+                            '$$onlyBackdrop',
+                            { $floor: { $multiply: [{ $rand: {} }, { $size: '$$onlyBackdrop' }] } },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+
+      { $sort: { [sortField]: -1 } },
+      { $skip: skip },
+      { $limit: Number(limit) },
+      {
+        $project: {
+          item: 1,
+          slug: 1,
+          'category.slug': 1,
+          'category.name': 1,
+          'images.image_sizes': 1,
+          'images.image': 1,
+        },
+      },
+      {
+        $unset: ['item.actor', 'item.category', 'item.country', 'item.images', 'item.episodes'],
+      },
+    ]);
+
+    const totalItems = await result.length;
+
+    return {
+      data: { result, totalItems },
     };
   }
 
