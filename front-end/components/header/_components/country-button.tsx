@@ -36,7 +36,7 @@ export default function CountryButton() {
               prefetch={false}
               key={country._id}
               className="block text-nowrap text-white cursor-pointer hover:text-primary-color py-2 pl-3 pr-8 hover:bg-bg-base rounded-sm text-[13px] w-[140px]"
-              href={`/country/${country.slug}`}
+              href={`/filter?countries=${country.slug}`}
             >
               {country.name}
             </Link>

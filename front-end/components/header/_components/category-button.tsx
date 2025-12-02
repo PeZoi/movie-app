@@ -36,7 +36,7 @@ export default function CategoryButton() {
               prefetch={false}
               key={category._id}
               className="block text-nowrap text-white cursor-pointer hover:text-primary-color py-2 pl-3 pr-8 hover:bg-bg-base rounded-sm text-[13px] w-[140px]"
-              href={`/category/${category.slug}`}
+              href={`/filter?categories=${category.slug}`}
             >
               {category.name}
             </Link>

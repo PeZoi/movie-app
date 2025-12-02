@@ -9,7 +9,7 @@ type BadgeCategoryProps = {
 export default function BadgeCategory({ category }: BadgeCategoryProps) {
   return (
     <Link
-      href={`/category/${category?.slug}`}
+      href={`/filter?categories=${category?.slug}`}
       className="flex items-center gap-1 px-1.5 py-1 rounded-sm bg-[#ffffff10] text-white text-[12px] hover:text-primary-color"
     >
       {category?.name}

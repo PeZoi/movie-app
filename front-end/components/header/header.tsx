@@ -42,10 +42,10 @@ export default function Header() {
       <div className="flex-1 w-full flex items-center justify-between">
         <ul className="flex items-center gap-6 text-white text-[13px]">
           <li className="hover:text-primary-color-hover">
-            <Link href="/">Phim Lẻ</Link>
+            <Link href="/filter?type=single">Phim Lẻ</Link>
           </li>
           <li className="hover:text-primary-color-hover">
-            <Link href="/">Phim Bộ</Link>
+            <Link href="/filter?type=series">Phim Bộ</Link>
           </li>
           <li className="flex items-center gap-1 cursor-pointer">
             <CategoryButton />
