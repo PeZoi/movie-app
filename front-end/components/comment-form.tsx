@@ -1,3 +1,5 @@
+'use client';
+
 import DialogAuth from '@/components/dialog-auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';

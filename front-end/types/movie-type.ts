@@ -1,5 +1,6 @@
 import { ActorType } from "@/types/actor-type";
 import { CategoryType } from "@/types/category-type";
+import { CountryType } from "@/types/country-type";
 
 // Image size URLs for backdrop
 export interface BackdropImageSizes {
@@ -41,6 +42,7 @@ export interface ImageData {
 export interface MovieImage {
   image_sizes: ImageSizes;
   image: ImageData;
+  images: ImageData[];
 }
 
 export interface ImdbType {
@@ -67,8 +69,10 @@ export interface MovieItem {
   year: number;
   imdb: ImdbType;
   category: CategoryType[];
+  country: CountryType[];
   episodes: EpisodeType[];
   actor: ActorType[];
+  images: MovieImage[];
 }
 
 
