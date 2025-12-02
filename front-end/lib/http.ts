@@ -109,7 +109,7 @@ const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url:
           body: JSON.stringify({ force: true })
         })
         clientSessionToken.value = ''
-        location.href = '/login'
+        // location.href = '/login'
       } else {
         const sessionToken = (options?.headers as any)?.Authorization?.split('Bearer ')[1]
         redirect(`/logout?sessionToken=${sessionToken}`)

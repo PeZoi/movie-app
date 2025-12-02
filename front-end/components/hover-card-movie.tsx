@@ -20,7 +20,12 @@ export default function HoverCardMovie({ children, movie }: HoverCardMovieProps)
         <div className="bg-[#2f3446]">
           <div className="w-full h-[250px] mask-image-top-down">
             <Image
-              src={movie?.images[0]?.image_sizes?.backdrop?.original + movie?.images[0]?.image?.file_path}
+              src={
+                movie?.images
+                  ? movie?.images?.[0]?.image_sizes?.backdrop?.original + movie?.images?.[0]?.image?.file_path
+                  : movie?.item?.images?.[0]?.image_sizes?.backdrop?.original +
+                    movie?.item?.images?.[0]?.images?.[0]?.file_path
+              }
               alt={movie?.item?.name}
               width={100}
               height={100}
@@ -34,7 +39,7 @@ export default function HoverCardMovie({ children, movie }: HoverCardMovieProps)
             </div>
             <div className="flex justify-between items-center gap-4 flex-nowrap">
               <Link
-                href={`/movie/${movie?.slug}`}
+                href={`/movie/watch/${movie?.slug}`}
                 className="w-fit h-[38px] text-sm text-black flex items-center gap-2 bg-primary-color-gradient px-8 rounded-sm justify-center hover:opacity-90"
               >
                 <Play size={18} strokeWidth={3} />

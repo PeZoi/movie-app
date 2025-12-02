@@ -21,7 +21,7 @@ export default function Comment({ hasChildren = false }: CommentProps) {
       </Avatar>
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3 h-fit">
-          <span className="font-medium">Đông</span>
+          <span className="font-medium text-white">Đông</span>
           <span className="text-[11px] text-[#aaa]">3 ngày trước</span>
           <span className="border border-[#fff5] rounded-sm py-[0.1rem] px-[0.4rem] text-[11px] text-[#aaa] h-fit">
             Tập 1

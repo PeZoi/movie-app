@@ -5,22 +5,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { countryAPI } from '@/services/country-service';
+import { useGlobalStore } from '@/store';
 import { CountryType } from '@/types/country-type';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function CountryButton() {
-  const [countries, setCountries] = useState<CountryType[]>([]);
+  const { countryList, setCountryList } = useGlobalStore();
 
   useEffect(() => {
     const fetchCountries = async () => {
       const { data } = await countryAPI.getAllCountries();
-      const countries = data?.result || [];
-      setCountries(countries);
+      setCountryList(data?.result || []);
     };
     fetchCountries();
-  }, []);
+  }, [setCountryList]);
 
   return (
     <DropdownMenu modal={false}>
@@ -31,7 +31,7 @@ export default function CountryButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-fit p-3 bg-black" align="start" sideOffset={20}>
         <DropdownMenuGroup className="grid grid-cols-3 gap-y-2">
-          {countries?.map((country) => (
+          {countryList?.map((country: CountryType) => (
             <Link
               prefetch={false}
               key={country._id}

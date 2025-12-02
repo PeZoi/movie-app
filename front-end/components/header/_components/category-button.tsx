@@ -5,22 +5,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { categoryAPI } from '@/services/category-service';
+import { useGlobalStore } from '@/store';
 import { CategoryType } from '@/types/category-type';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function CategoryButton() {
-  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const { categoryList, setCategoryList } = useGlobalStore();
 
   useEffect(() => {
     const fetchCategories = async () => {
       const { data } = await categoryAPI.getAllCategories();
-      const categories = data?.result || [];
-      setCategories(categories);
+      setCategoryList(data?.result || []);
     };
     fetchCategories();
-  }, []);
+  }, [setCategoryList]);
 
   return (
     <DropdownMenu modal={false}>
@@ -31,7 +31,7 @@ export default function CategoryButton() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-fit p-3 bg-black" align="start" sideOffset={20}>
         <DropdownMenuGroup className="grid grid-cols-3 gap-y-2">
-          {categories?.map((category) => (
+          {categoryList?.map((category: CategoryType) => (
             <Link
               prefetch={false}
               key={category._id}

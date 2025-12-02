@@ -1,14 +1,13 @@
 'use client';
 
-import Comment from '@/app/movie/watch/_components/comment';
-import CommentForm from '@/app/movie/watch/_components/comment-form';
+import Comment from '@/components/comment';
+import CommentForm from '@/components/comment-form';
 import EpisodeList from '@/app/movie/watch/_components/episode-list';
 import MovieSuggestItem from '@/app/movie/watch/_components/movie-suggest-item';
+import AvatarList from '@/components/avatar-list';
 import BadgeCategory from '@/components/badge-category';
 import BadgeCustom from '@/components/badge-custom';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { AVATAR_DEFAULT } from '@/constants/constants';
-import { IMAGE_TMDB_ORIGINAL, O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
+import { O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
 import { movieService } from '@/services/movie-service';
 import { MovieType } from '@/types/movie-type';
 import {
@@ -40,7 +39,6 @@ export default function Index() {
   const searchParams = useSearchParams();
   const [movie, setMovie] = useState<MovieType | null>(null);
   const [episodeCurrent, setEpisodeCurrent] = useState<EpisodeCurrent | null>(null);
-  const [actorFallbackMap, setActorFallbackMap] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (!slug || !searchParams || !episodeCurrent?.episode) {
@@ -65,15 +63,19 @@ export default function Index() {
 
         setMovie(response.data?.result || null);
         setEpisodeCurrent({
-          link_embed: response.data?.result?.item?.episodes[0].server_data[0].link_embed || '',
-          episode: response.data?.result?.item?.episodes[0].server_data[0].name || '',
+          link_embed:
+            response.data?.result?.item?.episodes[0].server_data[parseInt(searchParams.get('ep') || '1') - 1]
+              .link_embed || '',
+          episode:
+            response.data?.result?.item?.episodes[0].server_data[parseInt(searchParams.get('ep') || '1') - 1].name ||
+            '',
         });
       } catch (error) {
         console.error(error);
       }
     };
     fetchMovie();
-  }, [slug]);
+  }, [searchParams, slug]);
 
   return (
     <div className="bg-bg-base">
@@ -207,32 +209,7 @@ export default function Index() {
             <div className="h-full border-l border-white/10 p-10">
               <p className="text-2xl font-medium flex items-center gap-2">Diễn viên</p>
               <div className="grid grid-cols-3 place-items-center mt-5 gap-4 border-white/10 border-b pb-10 mb-10">
-                {movie?.item.actor.map((actor) => {
-                  const shouldUseFallback = actorFallbackMap[actor.actor_id] || !actor.profile_path;
-                  const avatarSrc = shouldUseFallback ? AVATAR_DEFAULT : `${IMAGE_TMDB_ORIGINAL}/${actor.profile_path}`;
-
-                  return (
-                    <Link
-                      href={'/author/' + actor.actor_id}
-                      className="flex flex-col items-center justify-center gap-2"
-                      key={actor.actor_id}
-                    >
-                      <Avatar className="size-20">
-                        <AvatarImage
-                          src={avatarSrc}
-                          className="object-cover"
-                          onError={() =>
-                            setActorFallbackMap((prev) => ({
-                              ...prev,
-                              [actor.actor_id]: true,
-                            }))
-                          }
-                        />
-                      </Avatar>
-                      <p className="text-sm text-wrap text-center">{actor.name}</p>
-                    </Link>
-                  );
-                })}
+                <AvatarList actors={movie?.item?.actor || []} />
               </div>
               <p className="text-2xl font-medium flex items-center gap-2">Đề xuất cho bạn</p>
               <div className="mt-5">
