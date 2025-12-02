@@ -321,7 +321,15 @@ export class MovieService {
           },
         },
       },
-
+      {
+        $group: {
+          _id: '$_id',
+          slug: { $first: '$slug' },
+          item: { $first: '$item' },
+          category: { $first: '$category' },
+          images: { $first: '$images' },
+        },
+      },
       { $sort: { [sortField]: -1 } },
       { $skip: skip },
       { $limit: Number(limit) },
@@ -340,10 +348,12 @@ export class MovieService {
       },
     ]);
 
+    const totalMovies = await this.MovieModel.countDocuments({});
     const totalItems = await result.length;
+    const totalPages = Math.ceil(totalMovies / pageSizeNumber);
 
     return {
-      data: { result, totalItems },
+      data: { result, totalItems, totalPages },
     };
   }
 
