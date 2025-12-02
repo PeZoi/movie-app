@@ -34,7 +34,7 @@ export class MovieService {
     try {
       const i18n = I18nContext.current();
       if (!current) current = 1;
-      if (!pageSize) pageSize = 10;
+      if (!pageSize) pageSize = 20;
 
       const category = await this.categoryModel.findOne({ slug }).select('_id').lean();
       if (!category) throw new BadRequestException(i18n.t('category.CATEGORY_NOT_FOUND'));
@@ -84,7 +84,7 @@ export class MovieService {
       const i18n = I18nContext.current();
 
       if (!current) current = 1;
-      if (!pageSize) pageSize = 10;
+      if (!pageSize) pageSize = 20;
 
       const country = await this.CountryModel.findOne({ slug }).select('_id').lean();
       if (!country) throw new BadRequestException(i18n.t('country.COUNTRY_NOT_FOUND'));
@@ -330,30 +330,52 @@ export class MovieService {
           images: { $first: '$images' },
         },
       },
-      { $sort: { [sortField]: -1 } },
-      { $skip: skip },
-      { $limit: Number(limit) },
+
       {
-        $project: {
-          item: 1,
-          slug: 1,
-          'category.slug': 1,
-          'category.name': 1,
-          'images.image_sizes': 1,
-          'images.image': 1,
+        $facet: {
+          paginatedResults: [{ $sort: { [sortField]: -1 } }, { $skip: skip }, { $limit: Number(limit) }],
+          totalCount: [{ $count: 'count' }],
         },
       },
+
       {
-        $unset: ['item.actor', 'item.category', 'item.country', 'item.images', 'item.episodes'],
+        $project: {
+          paginatedResults: {
+            item: {
+              name: 1,
+              originName: 1,
+              description: 1,
+              type: 1,
+              status: 1,
+              posterUrl: 1,
+              thumbUrl: 1,
+              trailerUrl: 1,
+              time: 1,
+              episodeCurrent: 1,
+              episodeTotal: 1,
+              quality: 1,
+              lang: 1,
+              year: 1,
+              imdb: 1,
+            },
+            slug: 1,
+            category: { name: 1, slug: 1 },
+            images: { image_sizes: 1, image: 1 },
+          },
+          totalCount: 1,
+        },
       },
     ]);
 
-    const totalMovies = await this.MovieModel.countDocuments({});
-    const totalItems = await result.length;
-    const totalPages = Math.ceil(totalMovies / pageSizeNumber);
+    const totalItems = result[0].totalCount[0]?.count || 0;
+    const totalPages = Math.ceil(totalItems / pageSizeNumber);
 
     return {
-      data: { result, totalItems, totalPages },
+      data: {
+        result: result[0].paginatedResults,
+        totalItems,
+        totalPages,
+      },
     };
   }
 
