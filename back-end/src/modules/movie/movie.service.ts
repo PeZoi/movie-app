@@ -200,9 +200,12 @@ export class MovieService {
   }
 
   async getMovieFilter(dto: MovieFilterDto) {
-    const { countries, categories, years, type, rating, sort = 'updated_at', page = 1, pageSize = 20 } = dto;
-    const skip = (Number(page) - 1) * Number(pageSize);
-    const limit = Number(pageSize);
+    const { countries, categories, years, type, sort = 'updated_at', current = 1, pageSize = 20 } = dto;
+
+    const [pageNumber, pageSizeNumber] = [Number(current) || 1, Number(pageSize) || 20];
+
+    const skip = (pageNumber - 1) * pageSizeNumber;
+    const limit = pageSizeNumber;
 
     const parseList = (str) => (str ? str.split(',').filter(Boolean) : []);
 
@@ -274,6 +277,7 @@ export class MovieService {
               {
                 $cond: [{ $gt: [{ $size: '$filterYears' }, 0] }, { $in: ['$item.year', '$filterYears'] }, true],
               },
+
               ...(type ? [{ $eq: ['$item.type', type] }] : [{ $or: [true] }]),
             ],
           },

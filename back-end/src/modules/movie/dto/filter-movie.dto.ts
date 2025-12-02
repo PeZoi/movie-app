@@ -22,7 +22,7 @@ export class MovieFilterDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  page?: number;
+  current?: number;
 
   @IsOptional()
   sort?: string;
