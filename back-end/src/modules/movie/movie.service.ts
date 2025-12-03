@@ -285,6 +285,17 @@ export class MovieService {
       },
 
       // RANDOM ONLY IMAGE
+
+      {
+        $group: {
+          _id: '$_id',
+          slug: { $first: '$slug' },
+          item: { $first: '$item' },
+          category: { $first: '$category' },
+          images: { $first: '$images' },
+          updatedAt: { $first: '$updatedAt' },
+        },
+      },
       {
         $addFields: {
           images: {
@@ -321,16 +332,6 @@ export class MovieService {
           },
         },
       },
-      {
-        $group: {
-          _id: '$_id',
-          slug: { $first: '$slug' },
-          item: { $first: '$item' },
-          category: { $first: '$category' },
-          images: { $first: '$images' },
-        },
-      },
-
       {
         $facet: {
           paginatedResults: [{ $sort: { [sortField]: -1 } }, { $skip: skip }, { $limit: Number(limit) }],
