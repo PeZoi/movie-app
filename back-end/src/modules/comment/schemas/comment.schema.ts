@@ -2,26 +2,36 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Types } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { User } from '../../users/schemas/user.schema';
-import { Movie } from '../../movie/schemas/movie.schema';
 
-export type CommentDocument = HydratedDocument<Comments>;
+export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema({ timestamps: true })
-export class Comments {
+export class Comment {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true })
-  movie: Movie;
+  movie_id: Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  user: User | Types.ObjectId;
+  user_id: Types.ObjectId;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  parent_id: Types.ObjectId | null;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  mention_id: Types.ObjectId | null;
 
   @Prop({ required: true })
   content: string;
 
   @Prop({ default: 0 })
-  likes: number;
+  episode_number: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: null })
-  parentCommentId?: Types.ObjectId | null;
+  @Prop({ default: 0 })
+  season_number: number;
+
+  @Prop({ default: 0 })
+  total_like: number;
+
+  @Prop({ default: 0 })
+  total_dislike: number;
 }
-export const CommentSchema = SchemaFactory.createForClass(Comments);
+export const CommentSchema = SchemaFactory.createForClass(Comment);

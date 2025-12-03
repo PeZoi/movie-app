@@ -284,8 +284,6 @@ export class MovieService {
         },
       },
 
-      // RANDOM ONLY IMAGE
-
       {
         $group: {
           _id: '$_id',
