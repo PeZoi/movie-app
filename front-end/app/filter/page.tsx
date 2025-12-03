@@ -1,5 +1,6 @@
 'use client';
 
+import FilterForm from '@/components/filter-form';
 import HoverCardMovie from '@/components/hover-card-movie';
 import { O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
 import { movieService } from '@/services/movie-service';
@@ -7,30 +8,62 @@ import { useGlobalStore } from '@/store';
 import { MovieType } from '@/types/movie-type';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function CategoryPage() {
-  const { slug } = useParams();
+export default function FilterPage() {
+  const searchParam = useSearchParams();
+  const type = searchParam.get('type');
+  const categories = searchParam.get('categories');
+  const countries = searchParam.get('countries');
+  const years = searchParam.get('years');
+  const sort = searchParam.get('sort');
   const [movieList, setMovieList] = useState<MovieType[]>([]);
-  const { getNameCategoryBySlug } = useGlobalStore();
+  const { getNameCountryBySlug, getNameCategoryBySlug } = useGlobalStore();
 
   useEffect(() => {
     const fetchMovieList = async () => {
-      const response = await movieService.getMoviesByCategory(slug as string, 1, 32);
+      const response = await movieService.getMoviesByFilter(
+        type as string,
+        categories as string,
+        countries as string,
+        years as string,
+        sort as string,
+      );
       if (response.statusCode === 200) {
         setMovieList(response.data?.result || []);
       }
     };
     fetchMovieList();
-  }, [slug]);
+  }, [type, categories, countries, years, sort]);
 
   return (
     <div className="bg-bg-base min-h-screen">
       <div className="wrapper">
         <div className="max-w-[1900px] mx-auto px-5">
-          <h1 className="text-white font-bold text-3xl">Phim {getNameCategoryBySlug(slug as string)}</h1>
-          <div className="grid lg:grid-cols-8 md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-7 mt-10">
+          <div className="mt-10 mb-6">
+            {searchParam.size === 1 &&
+              (categories && categories.split(',').length === 1 ? (
+                <h1 className="text-white font-bold text-3xl">Phim {getNameCategoryBySlug(categories as string)}</h1>
+              ) : countries && countries.split(',').length === 1 ? (
+                <h1 className="text-white font-bold text-3xl">Phim {getNameCountryBySlug(countries as string)}</h1>
+              ) : type === 'single' ? (
+                <h1 className="text-white font-bold text-3xl">Phim lẻ</h1>
+              ) : type === 'series' ? (
+                <h1 className="text-white font-bold text-3xl">Phim bộ</h1>
+              ) : (
+                <h1 className="text-white font-bold text-3xl">Duyệt phim</h1>
+              ))}
+            {searchParam.size > 1 && <h1 className="text-white font-bold text-3xl">Kết quả tìm kiếm</h1>}
+          </div>
+
+          {/* Bộ lọc phim - Collapse */}
+          <div className="mb-8">
+            <FilterForm />
+          </div>
+
+          {/* Danh sách phim */}
+          <div className="grid lg:grid-cols-8 md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-7">
             {movieList?.map((movie: MovieType) => (
               <div key={movie._id}>
                 <HoverCardMovie movie={movie}>
