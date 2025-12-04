@@ -10,3 +10,6 @@ export interface ResponseType<T, D extends { result: T } = { result: T }> {
 // Helper type để tạo response type với các trường bổ sung
 export type ResponseTypeWithExtraFields<T, ExtraFields extends Record<string, unknown> = Record<string, never>
 > = ResponseType<T, { result: T } & ExtraFields>;
+
+// Type riêng cho pagination response với totalItems và totalPages
+export type PaginationResponseType<T> = ResponseType<T, { result: T; totalItems: number; totalPages: number }>;

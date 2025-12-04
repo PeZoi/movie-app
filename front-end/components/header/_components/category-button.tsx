@@ -1,3 +1,5 @@
+'use client';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +27,7 @@ export default function CategoryButton() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-1 cursor-pointer">
+        <div className="flex items-center gap-1 cursor-pointer" suppressHydrationWarning>
           Thể loại <ChevronDown size={14} />
         </div>
       </DropdownMenuTrigger>
