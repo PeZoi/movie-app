@@ -19,17 +19,29 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
   const { slug } = await params;
 
   let movie: MovieType;
+  let moviesSuggestion: MovieType[] = [];
+
+  // Get movie by slug
   try {
     const response = await movieService.getMovieBySlug(slug as string);
     if (response.statusCode === 200 && response.data?.result) {
       movie = response.data.result as MovieType;
-      console.log(movie?.item?.images?.[0]?.images);
     } else {
       notFound();
     }
   } catch (error) {
     console.error('Error fetchingd movie:', error);
     notFound();
+  }
+
+  // Get movies suggestion
+  try {
+    const response = await movieService.getMoviesSuggestion(
+      movie?.item?.category?.map((category) => category.slug).join(',') || '',
+    );
+    moviesSuggestion = response.data?.result || [];
+  } catch (error) {
+    console.error('Error fetching movies suggestion:', error);
   }
 
   return (
@@ -122,7 +134,9 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             <div id="demo">
               <p className="text-white font-medium text-xl">Đề xuất cho bạn</p>
               <div className="space-y-4 mt-5">
-                <MovieSuggestItem />
+                {moviesSuggestion.map((movie) => (
+                  <MovieSuggestItem key={movie?.slug} movie={movie} />
+                ))}
               </div>
             </div>
           </div>

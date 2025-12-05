@@ -93,7 +93,7 @@ export default function FilterForm({ defaultOpen = false }: FilterFormProps) {
     setSelectedType('');
     setSelectedCategories([]);
     setSelectedYears([]);
-    setSelectedSort('newest');
+    setSelectedSort('updated_at');
   };
 
   const FilterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
