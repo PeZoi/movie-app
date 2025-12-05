@@ -11,6 +11,7 @@ export class CommentController {
     dto: {
       movie_id: string;
       content: string;
+      is_spoil: boolean;
       episode_number?: number;
       season_number?: number;
       parent_id?: string;
@@ -23,10 +24,27 @@ export class CommentController {
     return this.commentService.createComment({ ...dto, user_id: userId });
   }
 
+  @Post('vote')
+  async voteComment(
+    @Body()
+    dto: {
+      comment_id: string;
+      type: number;
+    },
+    @Req()
+    req,
+  ) {
+    const userId = req.user.id;
+    return this.commentService.voteComment({ ...dto, user_id: userId });
+  }
+
   @Get('list')
   async getCommentsById(
     @Query() query: { movie_id: string; episode_number?: number; season_number?: number; parent_id?: string },
+    @Req()
+    req,
   ) {
-    return this.commentService.getCommentsById(query);
+    const userId = req.user.id;
+    return this.commentService.getCommentsById(query, userId);
   }
 }

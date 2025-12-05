@@ -26,6 +26,9 @@ export class Comment {
   episode_number: number;
 
   @Prop({ default: 0 })
+  total_children: number;
+
+  @Prop({ default: 0 })
   season_number: number;
 
   @Prop({ default: 0 })
