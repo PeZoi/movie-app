@@ -40,13 +40,27 @@ export class CommentService {
   }
 
   async getCommentsById(query, user_id: string) {
+    const { movie_id, season_number, episode_number, parent_id, current = 1, pageSize = 20 } = query;
+    const filter = {
+      movie_id: movie_id,
+      episode_number: episode_number ? episode_number : 0,
+      season_number: season_number ? season_number : 0,
+      parent_id: parent_id ?? null,
+    };
+
+    const page = Number(current) > 0 ? Number(current) : 1;
+    const limit = Number(pageSize) > 0 ? Number(pageSize) : 20;
+
+    const totalItems = await this.commentModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const skip = (page - 1) * limit;
+
     const comments = await this.commentModel
-      .find({
-        movie_id: query.movie_id,
-        episode_number: query.episode_number ?? 0,
-        season_number: query.season_number ?? 0,
-        parent_id: query.parent_id ?? null,
-      })
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .populate({
         path: 'user_id',
         select: 'name',
@@ -92,6 +106,8 @@ export class CommentService {
     return {
       data: {
         result,
+        totalItems,
+        totalPages,
       },
     };
   }

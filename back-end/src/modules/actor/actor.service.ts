@@ -2,12 +2,28 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Types } from 'mongoose';
+import { I18nContext } from 'nestjs-i18n';
+import { BadRequestException } from '@nestjs/common';
 
 import { Actor } from './schemas/actor.schema';
 @Injectable()
 export class ActorService {
   constructor(@InjectModel(Actor.name) private ActorModel: Model<Actor>) {}
 
+  async getActorById(_id: string) {
+    try {
+      const i18n = I18nContext.current();
+
+      const actor = await this.ActorModel.findOne({ _id }).lean();
+      if (!actor) throw new BadRequestException(i18n.t('country.COUNTRY_NOT_FOUND'));
+
+      return {
+        data: { result: [actor] },
+      };
+    } catch (error) {
+      throw new Error(`Cannot get movies by country: ${error.message}`);
+    }
+  }
   async ensureMany(
     actors: {
       tmdb_people_id: number;

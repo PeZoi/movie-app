@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Query } from '@nestjs/common';
 import { CommentService } from './comment.service';
 
 @Controller('comment')
@@ -40,7 +40,15 @@ export class CommentController {
 
   @Get('list')
   async getCommentsById(
-    @Query() query: { movie_id: string; episode_number?: number; season_number?: number; parent_id?: string },
+    @Query()
+    query: {
+      movie_id: string;
+      episode_number?: number;
+      season_number?: number;
+      parent_id?: string;
+      current: number;
+      pageSize: number;
+    },
     @Req()
     req,
   ) {

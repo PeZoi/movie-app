@@ -129,9 +129,12 @@ export class MovieService {
     }
   }
 
-  async getMovieByActor(_id: string) {
+  async getMovieByActor(_id: string, current: number, pageSize: number) {
     try {
       const i18n = I18nContext.current();
+      if (!current) current = 1;
+      if (!pageSize) pageSize = 20;
+      const skip = (current - 1) * pageSize;
 
       const actor = await this.ActorModel.findOne({ _id }).select('_id').lean();
       if (!actor) throw new BadRequestException(i18n.t('country.COUNTRY_NOT_FOUND'));
@@ -139,6 +142,8 @@ export class MovieService {
       const result = await this.MovieModel.find({
         'item.actor': actor._id,
       })
+        .skip(skip)
+        .limit(pageSize)
         .populate([
           {
             path: 'item.episodes',
@@ -159,11 +164,12 @@ export class MovieService {
         .lean();
 
       const totalItems = await this.MovieModel.countDocuments({
-        'item.country': actor._id,
+        'item.actor': actor._id,
       });
+      const totalPages = Math.ceil(totalItems / pageSize);
 
       return {
-        data: { result },
+        data: { result, totalItems, totalPages },
       };
     } catch (error) {
       throw new Error(`Cannot get movies by country: ${error.message}`);
@@ -195,7 +201,7 @@ export class MovieService {
 
     return {
       message: await i18n.t('movie.GET_SUCCESS'),
-      data: { result },
+      data: { result: [result] },
     };
   }
 

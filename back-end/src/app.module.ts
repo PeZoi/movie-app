@@ -26,7 +26,6 @@ import { ErrorInterceptor } from '@/common/interceptors/error.interceptor';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { ImageModule } from './modules/image/image.module';
 import { CollectionModule } from './modules/collection/collection.module';
-import { ReplyModule } from './modules/reply/reply.module';
 import { JwtAuthGuard } from '@/modules/auth/passport/jwt-auth.guard';
 
 @Module({
@@ -83,7 +82,6 @@ import { JwtAuthGuard } from '@/modules/auth/passport/jwt-auth.guard';
     EpisodesModule,
     ImageModule,
     CollectionModule,
-    ReplyModule,
   ],
 })
 export class AppModule {}

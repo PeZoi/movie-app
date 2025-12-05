@@ -29,8 +29,12 @@ export class MovieController {
 
   @Get('actor/:id')
   @Public()
-  async getMovieByActor(@Param('id') id: string) {
-    return this.movieService.getMovieByActor(id);
+  async getMovieByActor(
+    @Param('id') id: string,
+    @Query('current') current?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
+    return this.movieService.getMovieByActor(id, current, pageSize);
   }
 
   @Get('filter')
