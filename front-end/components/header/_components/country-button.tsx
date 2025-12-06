@@ -27,7 +27,7 @@ export default function CountryButton() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-1 cursor-pointer">
+        <div className="flex items-center gap-1 cursor-pointer" suppressHydrationWarning>
           Quốc gia <ChevronDown size={14} />
         </div>
       </DropdownMenuTrigger>

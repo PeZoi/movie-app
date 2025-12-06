@@ -9,14 +9,14 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import 'swiper/css';
 
-const LIST_CATEGORY: { id: number; name: string; bgColor: string }[] = [
-  { id: 1, name: 'Phim viễn tưởng', bgColor: '#566ED9' },
-  { id: 2, name: 'Phim hành động', bgColor: '#8181AB' },
-  { id: 3, name: 'Phim Hành Động', bgColor: '#419A85' },
-  { id: 4, name: 'Phim kinh dị', bgColor: '#8E7CC1' },
-  { id: 5, name: 'Phim tình cảm', bgColor: '#D5947A' },
-  { id: 6, name: 'Phim hài hước', bgColor: '#B55A5A' },
-  { id: 7, name: 'Phim 18+', bgColor: '#515564' },
+const LIST_CATEGORY: { id: number; name: string; slug: string; bgColor: string }[] = [
+  { id: 1, name: 'Phim viễn tưởng', slug: 'vien-tuong', bgColor: '#566ED9' },
+  { id: 2, name: 'Phim hành động', slug: 'hanh-dong', bgColor: '#8181AB' },
+  { id: 3, name: 'Phim tâm lý', slug: 'tam-ly', bgColor: '#419A85' },
+  { id: 4, name: 'Phim kinh dị', slug: 'kinh-di', bgColor: '#8E7CC1' },
+  { id: 5, name: 'Phim tình cảm', slug: 'tinh-cam', bgColor: '#D5947A' },
+  { id: 6, name: 'Phim hài hước', slug: 'hai-huoc', bgColor: '#B55A5A' },
+  { id: 7, name: 'Phim 18+', slug: 'phim-18', bgColor: '#515564' },
 ];
 
 export default function Home() {
@@ -41,8 +41,8 @@ export default function Home() {
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 mt-10">
             {LIST_CATEGORY.map((item) => (
               <Link
-                href={`/category/${item.id}`}
-                key={item.id}
+                href={`/filter?categories=${item.slug}`}
+                key={item.slug}
                 className="block rounded-lg hover:-translate-y-1 transition-all duration-300 p-[1.2rem_2.5rem_1.2rem_1.5rem]"
                 style={{ backgroundColor: item.bgColor }}
               >

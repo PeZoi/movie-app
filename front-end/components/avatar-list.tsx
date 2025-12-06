@@ -8,12 +8,12 @@ import { ActorType } from '@/types/actor-type';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-interface AvatarListProps {
+interface ActorListProps {
   actors: ActorType[];
   className?: string;
 }
 
-export default function AvatarList({ actors, className }: AvatarListProps) {
+export default function ActorList({ actors, className }: ActorListProps) {
   const [actorFallbackMap, setActorFallbackMap] = useState<Record<number, boolean>>({});
   return (
     <>
@@ -23,7 +23,7 @@ export default function AvatarList({ actors, className }: AvatarListProps) {
 
         return (
           <Link
-            href={'/author/' + actor.actor_id}
+            href={'/actor/' + actor._id}
             className={cn('flex flex-col items-center justify-center gap-4', className)}
             key={actor.actor_id}
           >

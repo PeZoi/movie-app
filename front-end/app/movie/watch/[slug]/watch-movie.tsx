@@ -26,7 +26,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type EpisodeCurrent = {
   link_embed: string;
@@ -40,61 +40,87 @@ export default function WatchMoviePage() {
   const [movie, setMovie] = useState<MovieType | null>(null);
   const [moviesSuggestion, setMoviesSuggestion] = useState<MovieType[]>([]);
   const [episodeCurrent, setEpisodeCurrent] = useState<EpisodeCurrent | null>(null);
+  const ep = searchParams.get('ep') || '';
 
+  // Lấy thông tin phim + tập hiện tại, đồng thời đảm bảo URL luôn có ?ep=
   useEffect(() => {
-    if (!slug || !searchParams || !episodeCurrent?.episode) {
-      return;
-    }
+    if (!slug) return;
 
-    const currentEp = searchParams.get('ep');
-    if (currentEp === episodeCurrent.episode) {
-      return;
-    }
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('ep', episodeCurrent.episode);
-
-    router.replace(`/movie/watch/${slug}?${params.toString()}`, { scroll: false });
-  }, [router, searchParams, slug, episodeCurrent?.episode]);
-
-  useEffect(() => {
     const fetchMovie = async () => {
       try {
         const response = await movieService.getMovieBySlug(slug as string);
+        const data = response.data?.result?.[0] as MovieType | null;
 
-        console.log(response.data?.result);
+        if (!data) {
+          setMovie(null);
+          setEpisodeCurrent(null);
+          return;
+        }
 
-        setMovie(response.data?.result || null);
-        setEpisodeCurrent({
-          link_embed:
-            response.data?.result?.item?.episodes[0].server_data?.find(
-              (episode) => episode.name === searchParams.get('ep'),
-            )?.link_embed || '',
-          episode:
-            response.data?.result?.item?.episodes[0].server_data?.find(
-              (episode) => episode.name === searchParams.get('ep'),
-            )?.name || '',
-        });
+        const episodes = data?.item?.episodes?.[0]?.server_data;
+
+        if (!episodes.length) {
+          setMovie(data);
+          setEpisodeCurrent(null);
+          return;
+        }
+
+        const defaultEpName = episodes[0]?.name || '';
+        let currentEpName = ep || defaultEpName;
+        if (Number.isNaN(parseInt(currentEpName)) || parseInt(currentEpName) <= 0) {
+          currentEpName = defaultEpName;
+          const params = new URLSearchParams(searchParams.toString());
+          params.set('ep', currentEpName);
+          router.replace(`/movie/watch/${slug}?${params.toString()}`, { scroll: false });
+        }
+        const currentEp = episodes.find((episode) => episode.name === currentEpName);
+
+        if (!defaultEpName) router.replace(`/movie/${slug}`, { scroll: false });
+
+        // Nếu URL chưa có ?ep= thì set mặc định là tập đầu tiên
+        if (!ep && currentEpName) {
+          const params = new URLSearchParams(searchParams.toString());
+          params.set('ep', currentEpName);
+          router.replace(`/movie/watch/${slug}?${params.toString()}`, { scroll: false });
+        }
+
+        setMovie(data);
+        setEpisodeCurrent(
+          currentEp
+            ? {
+                link_embed: currentEp.link_embed,
+                episode: currentEp.name,
+              }
+            : null,
+        );
       } catch (error) {
         console.error(error);
       }
     };
-    fetchMovie();
-  }, [searchParams, slug]);
 
+    fetchMovie();
+  }, [slug, ep, router, searchParams]);
+
+  // Tính sẵn category slug cho API gợi ý phim
+  const suggestionCategories = useMemo(
+    () => movie?.item?.category.map((category) => category.slug).join(',') || '',
+    [movie?.item?.category],
+  );
+
+  // Gọi API gợi ý phim, chỉ chạy khi đã có category
   useEffect(() => {
+    if (!suggestionCategories) return;
+
     const fetchMoviesSuggestion = async () => {
       try {
-        const response = await movieService.getMoviesSuggestion(
-          movie?.item?.category.map((category) => category.slug).join(',') || '',
-        );
+        const response = await movieService.getMoviesSuggestion(suggestionCategories);
         setMoviesSuggestion(response.data?.result || []);
       } catch (error) {
         console.error(error);
       }
     };
     fetchMoviesSuggestion();
-  }, [movie]);
+  }, [suggestionCategories]);
 
   return (
     <div className="bg-bg-base">
@@ -160,13 +186,13 @@ export default function WatchMoviePage() {
                   <BadgeCustom variant="outline">{movie?.item?.episodeTotal}</BadgeCustom>
                 </div>
                 <div className="flex items-center gap-2 my-4">
-                  {movie?.item.category.map((category) => (
+                  {movie?.item?.category?.map((category) => (
                     <BadgeCategory key={category._id} category={category} />
                   ))}
                 </div>
-                {movie?.item.type === 'series' && (
+                {movie?.item?.type === 'series' && (
                   <>
-                    {movie.item.status === 'completed' && (
+                    {movie.item?.status === 'completed' && (
                       <div className="py-2 px-3 bg-[#22cb4c1a] text-[#22cb4c] flex items-center justify-center gap-2 w-fit rounded-full">
                         <BadgeCheck size={16} strokeWidth={2} />
                         <span className="text-xs">
@@ -174,7 +200,7 @@ export default function WatchMoviePage() {
                         </span>
                       </div>
                     )}
-                    {movie.item.status === 'ongoing' && (
+                    {movie.item?.status === 'ongoing' && (
                       <div className="py-2 px-3 bg-[#ff83001a] text-[#ff8300] flex items-center justify-center gap-2 w-fit rounded-full">
                         <LoaderCircle size={16} strokeWidth={2} className="animate-spin" />
                         <span className="text-xs">

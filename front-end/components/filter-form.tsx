@@ -86,6 +86,7 @@ export default function FilterForm({ defaultOpen = false }: FilterFormProps) {
     }
 
     router.push(`/filter?${params.toString()}`);
+    setIsOpen(false);
   };
 
   const handleReset = () => {
@@ -130,14 +131,13 @@ export default function FilterForm({ defaultOpen = false }: FilterFormProps) {
       className={`w-full bg-bg-base rounded-lg overflow-hidden relative ${isOpen ? 'border border-border-color' : ''}`}
     >
       {/* Header - Collapse trigger */}
-      <button
-        type="button"
+      <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center transition-all gap-2 cursor-pointer w-fit ${isOpen ? 'px-6 py-4' : ''}`}
+        className={`flex items-center transition-all gap-2 cursor-pointer w-fit focus:border-none ${isOpen ? 'px-6 py-4' : ''}`}
       >
         <Funnel size={14} strokeWidth={3.5} className="text-primary-color" />
         <h2 className="text-white text-lg font-bold">Bộ lọc</h2>
-      </button>
+      </div>
 
       {/* Collapsible content */}
       <div

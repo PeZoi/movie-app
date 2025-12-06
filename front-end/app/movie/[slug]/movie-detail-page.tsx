@@ -25,7 +25,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
   try {
     const response = await movieService.getMovieBySlug(slug as string);
     if (response.statusCode === 200 && response.data?.result) {
-      movie = response.data.result as MovieType;
+      movie = response.data.result?.[0] as MovieType;
     } else {
       notFound();
     }
@@ -60,14 +60,14 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
         <div className="mt-[-190px] max-w-[1640px] px-4 mx-auto relative z-3 flex justify-between items-stretch">
           <div className="shrink-0 w-[440px] p-10 flex flex-col rounded-[1.25_3rem_1.25_1.25rem] bg-bg-base">
             <Image
-              src={`${O_PHIM_IMG_MOVIE_URL}${movie.item.thumbUrl}`}
-              alt={movie.item.name}
+              src={`${O_PHIM_IMG_MOVIE_URL}${movie?.item?.thumbUrl}`}
+              alt={movie?.item?.name}
               width={160}
               height={240}
               className="rounded-lg object-cover mb-8"
             />
-            <h2 className="font-bold text-2xl mb-4 text-white">{movie.item.name}</h2>
-            <p className="text-primary-color text-sm mb-8">{movie.item.originName}</p>
+            <h2 className="font-bold text-2xl mb-4 text-white">{movie?.item?.name}</h2>
+            <p className="text-primary-color text-sm mb-8">{movie?.item?.originName}</p>
             <div className="flex items-center gap-2 mb-3">
               <BadgeCustom variant="imdb" className="font-medium">
                 {movie?.item?.imdb?.vote_average}
@@ -83,7 +83,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             </div>
             {movie?.item.type === 'series' && (
               <>
-                {movie.item.status === 'completed' && (
+                {movie?.item?.status === 'completed' && (
                   <div className="py-2 px-3 bg-[#22cb4c1a] text-[#22cb4c] flex items-center justify-center gap-2 w-fit rounded-full">
                     <BadgeCheck size={16} strokeWidth={2} />
                     <span className="text-xs">
@@ -91,7 +91,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                     </span>
                   </div>
                 )}
-                {movie.item.status === 'ongoing' && (
+                {movie?.item?.status === 'ongoing' && (
                   <div className="py-2 px-3 bg-[#ff83001a] text-[#ff8300] flex items-center justify-center gap-2 w-fit rounded-full">
                     <LoaderCircle size={16} strokeWidth={2} className="animate-spin" />
                     <span className="text-xs">
@@ -105,22 +105,23 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
               <div className="space-y-2">
                 <div className="text-white font-medium">Giới thiệu: </div>
                 <p className="text-text-base">
-                  {movie?.item?.description?.replaceAll('<p>', ' ').replaceAll('</p>', ' ').replaceAll('<br>', '\n')}
+                  {movie?.item?.description?.replaceAll('<p>', ' ').replaceAll('</p>', ' ').replaceAll('<br>', '\n') ||
+                    ''}
                 </p>
               </div>
               <div className="space-x-2">
                 <span className="text-white font-medium">Thời lượng:</span>
-                <span className="text-text-base">{movie?.item?.time}</span>
+                <span className="text-text-base">{movie?.item?.time || ''}</span>
               </div>
               <div className="space-x-2">
                 <span className="text-white font-medium">Quốc gia:</span>
                 <span className="text-text-base">
-                  {movie?.item?.country?.map((country) => country?.name).join(', ')}
+                  {movie?.item?.country?.map((country) => country?.name).join(', ') || ''}
                 </span>
               </div>
               <div className="space-x-2">
                 <span className="text-white font-medium">Năm phát hành:</span>
-                <span className="text-text-base">{movie?.item?.year}</span>
+                <span className="text-text-base">{movie?.item?.year || ''}</span>
               </div>
             </div>
             <Separator className="my-6 bg-border-color" />
@@ -134,7 +135,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             <div id="demo">
               <p className="text-white font-medium text-xl">Đề xuất cho bạn</p>
               <div className="space-y-4 mt-5">
-                {moviesSuggestion.map((movie) => (
+                {moviesSuggestion?.map((movie) => (
                   <MovieSuggestItem key={movie?.slug} movie={movie} />
                 ))}
               </div>
@@ -203,19 +204,25 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                   <p className="text-2xl font-medium flex items-center gap-2 text-white">
                     <TextAlignStart size={20} strokeWidth={3.5} className="text-primary-color" /> Danh sách tập phim
                   </p>
-                  {/* Danh sách tập phim */}
-                  <div className="grid grid-cols-8 gap-4 mt-6 text-white">
-                    {movie?.item?.episodes[0]?.server_data?.map((episode) => (
-                      <Link
-                        href={`/movie/watch/${movie?.slug}?ep=${episode.name}`}
-                        key={episode._id}
-                        className="flex justify-center items-center gap-2 bg-[#282B3A] rounded-sm h-[50px] hover:text-primary-color transition-all font-medium cursor-pointer"
-                      >
-                        <Play size={10} strokeWidth={3.5} />
-                        <span className="text-base">Tập {episode.name}</span>
-                      </Link>
-                    ))}
-                  </div>
+                  {/* Danh sách tập phim*/}
+                  {movie?.item?.episodes?.[0].server_data?.[0]?.name === '' ? (
+                    <div className="text-center text-white">
+                      <p className="text-lg font-medium">Phim này chưa có tập phim</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-8 gap-4 mt-6 text-white">
+                      {movie?.item?.episodes?.[0]?.server_data?.map((episode) => (
+                        <Link
+                          href={`/movie/watch/${movie?.slug}?ep=${episode.name}`}
+                          key={episode._id}
+                          className="flex justify-center items-center gap-2 bg-[#282B3A] rounded-sm h-[50px] hover:text-primary-color transition-all font-medium cursor-pointer"
+                        >
+                          <Play size={10} strokeWidth={3.5} />
+                          <span className="text-base">Tập {episode.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="gallery" className="pt-6">
@@ -246,7 +253,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                       <Link href={`/movie/watch/${movie.slug}`} className="block group">
                         <div className="relative w-full" style={{ aspectRatio: '2 / 3' }}>
                           <Image
-                            src={`${O_PHIM_IMG_MOVIE_URL}${movie.item.thumbUrl}`}
+                            src={`${O_PHIM_IMG_MOVIE_URL}${movie?.item?.thumbUrl}`}
                             alt={movie.item.name}
                             fill
                             sizes="(max-width: 768px) 40vw, 180px"
