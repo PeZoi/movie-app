@@ -45,7 +45,7 @@ export class CategoryService {
   async findAll() {
     const i18n = I18nContext.current();
 
-    const result = await this.CategoryModel.find({});
+    const result = await this.CategoryModel.find({}).sort({ name: 1 });
     const message = await i18n.t('constant.GET_DATA_SUCCESS');
     return {
       message,

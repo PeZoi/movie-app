@@ -41,6 +41,7 @@ export class CommentService {
 
   async getCommentsById(query, user_id: string) {
     const { movie_id, season_number, episode_number, parent_id, current = 1, pageSize = 20 } = query;
+    const sortOption = parent_id != null ? ({ createdAt: 1 } as any) : ({ createdAt: -1 } as any);
     const filter = {
       movie_id: movie_id,
       episode_number: episode_number ? episode_number : 0,
@@ -58,7 +59,7 @@ export class CommentService {
 
     const comments = await this.commentModel
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit)
       .populate({
