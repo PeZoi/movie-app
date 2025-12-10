@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { User } from '@/modules/users/schemas/user.schema';
+
 import { Comment, CommentDocument } from '@/modules/comment/schemas/comment.schema';
 import { CommentVote, CommentVoteDocument } from '@/modules/comment/schemas/commentVote.schema';
+import { Movie, MovieDocument } from '@/modules/movie/schemas/movie.schema';
+import { checkExist } from '@/helper/util';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     @InjectModel(CommentVote.name) private CommentVoteModel: Model<CommentVoteDocument>,
+    @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
   ) {}
   async createComment(dto: {
     movie_id: string;
@@ -21,6 +24,9 @@ export class CommentService {
     parent_id?: string;
     mention_id?: string;
   }) {
+    await checkExist(this.movieModel, dto.movie_id, 'Phim không tồn tại');
+    await checkExist(this.commentModel, dto.parent_id, 'Bình luận không tồn tại');
+
     const result = await this.commentModel.create({
       movie_id: dto.movie_id,
       user_id: dto.user_id,
@@ -121,7 +127,7 @@ export class CommentService {
       user_id,
     });
 
-    if (existingVote && existingVote.type === type) {
+    if (existingVote && existingVote.type === Number(type)) {
       await existingVote.deleteOne();
     } else if (existingVote) {
       existingVote.type = type;

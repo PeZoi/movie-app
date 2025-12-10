@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { CommentService } from './comment.service';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post('add')
+  @UseInterceptors(AnyFilesInterceptor())
   async createComment(
-    @Body()
+    @Body(new ValidationPipe({ transform: true }))
     dto: {
       movie_id: string;
       content: string;

@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 const saltRounds = 10;
+import { BadRequestException } from '@nestjs/common';
 
 export const hashPasswordHelper = async (plainPassword: string) => {
   try {
@@ -31,6 +32,13 @@ export const generateSlug = (name: string): string => {
     .replace(/\s+/g, '-') // đổi khoảng trắng thành -
     .replace(/-+/g, '-') // gộp nhiều dấu - liền nhau
     .replace(/^-+|-+$/g, ''); // xóa dấu - ở đầu/cuối
+};
+
+export const checkExist = async (model: any, id: string, msg: string) => {
+  if (!id) return;
+
+  const exist = await model.exists({ _id: id });
+  if (!exist) throw new BadRequestException(msg);
 };
 
 export const totalPage = () => {};

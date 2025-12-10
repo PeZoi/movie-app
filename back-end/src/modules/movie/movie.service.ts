@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import axios from 'axios';
 import { Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -7,7 +8,6 @@ import { I18nContext } from 'nestjs-i18n';
 import { ConfigService } from '@nestjs/config';
 
 import { CreateMovieDto } from './dto/create-movie.dto';
-import axios from 'axios';
 import { Movie } from './schemas/movie.schema';
 import { ActorService } from '../actor/actor.service';
 import { Category } from '@/modules/category/schemas/category.schema';

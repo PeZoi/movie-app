@@ -1,10 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Types, HydratedDocument } from 'mongoose';
+
 import { Actor } from '@/modules/actor/schemas/actor.schema';
 import { Category } from '@/modules/category/schemas/category.schema';
 import { Country } from '@/modules/country/schemas/country.schema';
 import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
+
+export type MovieDocument = HydratedDocument<Movie>;
 
 @Schema({ _id: false })
 class Imdb {
