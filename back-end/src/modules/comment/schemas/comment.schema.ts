@@ -19,6 +19,9 @@ export class Comment {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   mention_id: Types.ObjectId | null;
 
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  reviews_id: Types.ObjectId | null;
+
   @Prop({ required: true })
   content: string;
 
@@ -27,6 +30,9 @@ export class Comment {
 
   @Prop({ default: false })
   is_spoil: boolean;
+
+  @Prop({ default: false })
+  is_reviews: boolean;
 
   @Prop({ default: 0 })
   total_children: number;

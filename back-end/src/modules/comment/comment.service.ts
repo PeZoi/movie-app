@@ -25,7 +25,16 @@ export class CommentService {
     mention_id?: string;
   }) {
     await checkExist(this.movieModel, dto.movie_id, 'Phim không tồn tại');
-    await checkExist(this.commentModel, dto.parent_id, 'Bình luận không tồn tại');
+    let rootParentId = null;
+
+    if (dto.parent_id) {
+      const parentComment = await this.commentModel.findById(dto.parent_id).lean();
+      if (!parentComment.parent_id) {
+        rootParentId = dto.parent_id;
+      } else {
+        rootParentId = parentComment.parent_id;
+      }
+    }
 
     const result = await this.commentModel.create({
       movie_id: dto.movie_id,
@@ -34,7 +43,7 @@ export class CommentService {
       is_spoil: dto.is_spoil || false,
       episode_number: dto.episode_number || 0,
       season_number: dto.season_number || 0,
-      parent_id: dto.parent_id ? new Types.ObjectId(dto.parent_id) : null,
+      parent_id: rootParentId ? new Types.ObjectId(rootParentId) : null,
       mention_id: dto.mention_id ? new Types.ObjectId(dto.mention_id) : null,
     });
 
