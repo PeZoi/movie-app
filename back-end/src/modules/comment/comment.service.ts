@@ -36,7 +36,7 @@ export class CommentService {
       }
     }
 
-    const result = await this.commentModel.create({
+    const comment = await this.commentModel.create({
       movie_id: dto.movie_id,
       user_id: dto.user_id,
       content: dto.content,
@@ -46,6 +46,21 @@ export class CommentService {
       parent_id: rootParentId ? new Types.ObjectId(rootParentId) : null,
       mention_id: dto.mention_id ? new Types.ObjectId(dto.mention_id) : null,
     });
+
+    const result = (await this.commentModel
+      .findById(comment._id)
+      .populate({
+        path: 'user_id',
+        select: 'name',
+        populate: {
+          path: 'avatar',
+          select: 'path',
+        },
+      })
+      .lean()) as any;
+
+    result.user_info = result.user_id;
+    result.user_id = result.user_id._id;
 
     return {
       data: {
@@ -154,15 +169,39 @@ export class CommentService {
       this.CommentVoteModel.countDocuments({ comment_id, type: 0 }),
     ]);
 
-    await this.commentModel.findByIdAndUpdate(comment_id, {
-      total_like,
-      total_dislike,
+    const updateComment = (await this.commentModel
+      .findByIdAndUpdate(
+        comment_id,
+        {
+          total_like,
+          total_dislike,
+        },
+        { new: true },
+      )
+      .populate({
+        path: 'user_id',
+        select: 'name',
+        populate: {
+          path: 'avatar',
+          select: 'path',
+        },
+      })
+      .lean()) as any;
+
+    const userFinalVote = await this.CommentVoteModel.findOne({
+      comment_id,
+      user_id,
     });
 
+    const is_like = !!(userFinalVote && userFinalVote.type === 1);
+    const is_dislike = !!(userFinalVote && userFinalVote.type === 0);
+    const result = { ...updateComment, is_dislike, is_like };
+    result.user_info = result.user_id;
+    result.user_id = result.user_id._id;
     return {
       message: 'Thành công',
       data: {
-        result: [{ total_like, total_dislike }],
+        result: [result],
       },
     };
   }
