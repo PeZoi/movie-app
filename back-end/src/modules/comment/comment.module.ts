@@ -4,11 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { CommentService } from './comment.service';
 import { CommentController } from './comment.controller';
-
 import { Comment, CommentSchema } from '@/modules/comment/schemas/comment.schema';
 import { User, UserSchema } from '@/modules/users/schemas/user.schema';
 import { CommentVote, CommentVoteSchema } from '@/modules/comment/schemas/commentVote.schema';
 import { Movie, MovieSchema } from '@/modules/movie/schemas/movie.schema';
+import { Review, ReviewSchema } from '@/modules/comment/schemas/review.schema';
 
 @Module({
   controllers: [CommentController],
@@ -19,6 +19,7 @@ import { Movie, MovieSchema } from '@/modules/movie/schemas/movie.schema';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: CommentVote.name, schema: CommentVoteSchema }]),
     MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
+    MongooseModule.forFeature([{ name: Review.name, schema: ReviewSchema }]),
   ],
 })
 export class CommentModule {}

@@ -5,6 +5,7 @@ import { Model, Types } from 'mongoose';
 import { Comment, CommentDocument } from '@/modules/comment/schemas/comment.schema';
 import { CommentVote, CommentVoteDocument } from '@/modules/comment/schemas/commentVote.schema';
 import { Movie, MovieDocument } from '@/modules/movie/schemas/movie.schema';
+import { Review, ReviewDocument } from '@/modules/comment/schemas/review.schema';
 import { checkExist } from '@/helper/util';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class CommentService {
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
     @InjectModel(CommentVote.name) private CommentVoteModel: Model<CommentVoteDocument>,
     @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
+    @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
   ) {}
   async createComment(dto: {
     movie_id: string;
@@ -23,9 +25,24 @@ export class CommentService {
     season_number?: number;
     parent_id?: string;
     mention_id?: string;
+    is_review?: boolean;
+    point?: number;
   }) {
     await checkExist(this.movieModel, dto.movie_id, 'Phim không tồn tại');
     let rootParentId = null;
+    let review = null;
+
+    if (dto?.is_review) {
+      if (dto.point == null) {
+        throw new Error('Point không tồn tại');
+      }
+      review = await this.handleReview({
+        movie_id: dto.movie_id,
+        user_id: dto.user_id,
+        point: dto.point,
+        content: dto.content,
+      });
+    }
 
     if (dto.parent_id) {
       const parentComment = await this.commentModel.findById(dto.parent_id).lean();
@@ -40,11 +57,13 @@ export class CommentService {
       movie_id: dto.movie_id,
       user_id: dto.user_id,
       content: dto.content,
+      is_review: dto.is_review || false,
       is_spoil: dto.is_spoil || false,
       episode_number: dto.episode_number || 0,
       season_number: dto.season_number || 0,
       parent_id: rootParentId ? new Types.ObjectId(rootParentId) : null,
       mention_id: dto.mention_id ? new Types.ObjectId(dto.mention_id) : null,
+      review_id: review?._id ?? null,
     });
 
     const result = (await this.commentModel
@@ -70,14 +89,18 @@ export class CommentService {
   }
 
   async getCommentsById(query, user_id: string) {
-    const { movie_id, season_number, episode_number, parent_id, current = 1, pageSize = 20 } = query;
+    const { movie_id, season_number, episode_number, parent_id, is_review = false, current = 1, pageSize = 20 } = query;
     const sortOption = parent_id != null ? ({ createdAt: 1 } as any) : ({ createdAt: -1 } as any);
-    const filter = {
+    const filter: any = {
       movie_id: movie_id,
-      episode_number: episode_number ? episode_number : 0,
       season_number: season_number ? season_number : 0,
       parent_id: parent_id ?? null,
+      is_review: is_review ?? false,
     };
+
+    if (episode_number && episode_number > 0) {
+      filter.episode_number = Number(episode_number);
+    }
 
     const page = Number(current) > 0 ? Number(current) : 1;
     const limit = Number(pageSize) > 0 ? Number(pageSize) : 20;
@@ -87,7 +110,7 @@ export class CommentService {
 
     const skip = (page - 1) * limit;
 
-    const comments = await this.commentModel
+    let queryExec = this.commentModel
       .find(filter)
       .sort(sortOption)
       .skip(skip)
@@ -99,8 +122,23 @@ export class CommentService {
           path: 'avatar',
           select: 'path',
         },
-      })
-      .lean();
+      });
+
+    if (is_review) {
+      queryExec = queryExec.populate({
+        path: 'review_id',
+        select: 'point content createdAt updatedAt',
+      });
+    }
+
+    const comments = await queryExec.lean();
+
+    if (is_review) {
+      (comments as any[]).forEach((c: any) => {
+        c.review_info = c.review_id;
+        c.review_id = c.review_id?._id;
+      });
+    }
 
     const commentIds = comments.map((c) => c._id);
 
@@ -204,5 +242,27 @@ export class CommentService {
         result: [result],
       },
     };
+  }
+
+  async handleReview(dto: { movie_id: string; user_id: string; point: number; content: string }) {
+    let review = await this.reviewModel.findOne({
+      movie_id: dto.movie_id,
+      user_id: dto.user_id,
+    });
+
+    if (!review) {
+      review = await this.reviewModel.create({
+        movie_id: dto.movie_id,
+        user_id: dto.user_id,
+        point: dto.point,
+        content: dto.content,
+      });
+    } else {
+      review.point = dto.point;
+      review.content = dto.content;
+      await review.save();
+    }
+
+    return review;
   }
 }

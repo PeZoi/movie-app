@@ -18,6 +18,8 @@ export class CommentController {
       season_number?: number;
       parent_id?: string;
       mention_id?: string;
+      is_review?: boolean;
+      point?: number;
     },
     @Req()
     req,
@@ -48,6 +50,7 @@ export class CommentController {
       episode_number?: number;
       season_number?: number;
       parent_id?: string;
+      is_review?: boolean;
       current: number;
       pageSize: number;
     },
