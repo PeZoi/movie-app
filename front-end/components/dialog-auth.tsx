@@ -4,7 +4,7 @@ import ForgotPasswordForm from '@/components/header/_components/forgot-password-
 import LoginForm from '@/components/header/_components/login-form';
 import RegisterForm from '@/components/header/_components/register-form';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { authAPI } from '@/services/auth-service';
+import { authService } from '@/services/auth-service';
 import { useAuthStore } from '@/store';
 import {
   ForgotPasswordFormValues,
@@ -31,7 +31,7 @@ export default function DialogAuth({ children }: DialogAuthProps) {
 
   const onLoginSubmit = async (data: LoginFormValues) => {
     try {
-      const response = await authAPI.login(data);
+      const response = await authService.login(data);
       if (response.data) {
         handleLoginSuccess(response.data.result, response.data.access_token);
         toast.success('Đăng nhập thành công');
@@ -48,7 +48,7 @@ export default function DialogAuth({ children }: DialogAuthProps) {
       password: data.password,
     };
     try {
-      const response = await authAPI.register(requestBody);
+      const response = await authService.register(requestBody);
       if (response.data) {
         handleLoginSuccess(response.data.result, response.data.access_token);
       }

@@ -2,8 +2,7 @@ import MovieSuggestItem from '@/app/movie/watch/_components/movie-suggest-item';
 import AvatarList from '@/components/avatar-list';
 import BadgeCategory from '@/components/badge-category';
 import BadgeCustom from '@/components/badge-custom';
-import Comment from '@/components/comment';
-import CommentForm from '@/components/comment-form';
+import CommentList from '@/components/comment/comment-list';
 import HoverCardMovie from '@/components/hover-card-movie';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -247,33 +246,35 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
                 </div>
               </TabsContent>
               <TabsContent value="suggest" className="pt-6">
-                <div className="grid grid-cols-6 gap-4">
-                  <div>
-                    <HoverCardMovie movie={movie}>
-                      <Link href={`/movie/watch/${movie.slug}`} className="block group">
-                        <div className="relative w-full" style={{ aspectRatio: '2 / 3' }}>
-                          <Image
-                            src={`${O_PHIM_IMG_MOVIE_URL}${movie?.item?.thumbUrl}`}
-                            alt={movie.item.name}
-                            fill
-                            sizes="(max-width: 768px) 40vw, 180px"
-                            className="object-cover rounded-xl w-full h-full transition-opacity duration-300 group-hover:opacity-80"
-                          />
-                        </div>
-                      </Link>
-                    </HoverCardMovie>
-                    <div className="text-center mt-3 h-fit">
-                      <Link
-                        href={`/movie/watch/${movie.slug}`}
-                        className="block text-white text-base hover:text-primary-color transition-all duration-300 truncate"
-                      >
-                        {movie.item.name}
-                      </Link>
-                      <Link href={`/movie/watch/${movie.slug}`} className="block text-gray-500 text-sm truncate">
-                        {movie.item.originName}
-                      </Link>
+                <div className="grid grid-cols-5 gap-4">
+                  {moviesSuggestion.map((movie) => (
+                    <div key={movie.slug}>
+                      <HoverCardMovie movie={movie}>
+                        <Link href={`/movie/watch/${movie.slug}`} className="block group">
+                          <div className="relative w-full" style={{ aspectRatio: '2 / 3' }}>
+                            <Image
+                              src={`${O_PHIM_IMG_MOVIE_URL}${movie?.item?.thumbUrl}`}
+                              alt={movie.item.name}
+                              fill
+                              sizes="(max-width: 768px) 40vw, 180px"
+                              className="object-cover rounded-xl w-full h-full transition-opacity duration-300 group-hover:opacity-80"
+                            />
+                          </div>
+                        </Link>
+                      </HoverCardMovie>
+                      <div className="text-center mt-3 h-fit">
+                        <Link
+                          href={`/movie/watch/${movie.slug}`}
+                          className="block text-white text-base hover:text-primary-color transition-all duration-300 truncate"
+                        >
+                          {movie.item.name}
+                        </Link>
+                        <Link href={`/movie/watch/${movie.slug}`} className="block text-gray-500 text-sm truncate">
+                          {movie.item.originName}
+                        </Link>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </TabsContent>
             </Tabs>
@@ -281,16 +282,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             <Separator className="my-14 bg-border-color" />
 
             <div id="comment">
-              <CommentForm />
-
-              <div className="mt-10 bg-[#272932] rounded-lg py-13 flex flex-col items-center justify-center gap-2 text-[#aaa]">
-                <MessageSquareMore size={30} strokeWidth={2} />
-                <p className="text-base font-medium">Chưa có bình luận nào</p>
-              </div>
-              <div className="mt-4 space-y-6">
-                <Comment hasChildren={true} />
-                <Comment hasChildren={true} />
-              </div>
+              <CommentList movieId={movie?._id || ''} />
             </div>
           </div>
         </div>

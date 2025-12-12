@@ -13,8 +13,6 @@ type HoverCardMovieProps = {
 };
 
 export default function HoverCardMovie({ children, movie }: HoverCardMovieProps) {
-  console.log({ movie });
-
   return (
     <HoverCard>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>

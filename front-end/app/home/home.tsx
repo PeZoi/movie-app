@@ -2,7 +2,7 @@
 
 import Collection from '@/app/home/_components/collection';
 import SliderMovies from '@/app/home/_components/slide-movies';
-import { homeAPI } from '@/services/home-service';
+import { homeService } from '@/services/home-service';
 import { CollectionType } from '@/types/collection-type';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchCollectionList = async () => {
-      const response = await homeAPI.getCollectionList(1, 5);
+      const response = await homeService.getCollectionList(1, 5);
 
       setCollectionList(response?.data?.result || []);
     };

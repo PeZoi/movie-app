@@ -12,7 +12,7 @@ import type {
   ForgotPasswordFormValues,
   RegisterRequestBody,
 } from '../../../validation/auth-schemas';
-import { authAPI } from '@/services/auth-service';
+import { authService } from '@/services/auth-service';
 import { useAuthStore } from '@/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {

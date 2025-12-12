@@ -6,7 +6,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { categoryAPI } from '@/services/category-service';
+import { categoryService } from '@/services/category-service';
 import { useGlobalStore } from '@/store';
 import { CategoryType } from '@/types/category-type';
 import { ChevronDown } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function CategoryButton() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data } = await categoryAPI.getAllCategories();
+      const { data } = await categoryService.getAllCategories();
       setCategoryList(data?.result || []);
     };
     fetchCategories();
