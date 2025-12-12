@@ -2,7 +2,6 @@
 import { API_URL } from "@/constants/env"
 import { normalizePath } from "@/lib/utils"
 import { LoginResType, UserAuthResponseType } from "@/types/auth-type"
-import { redirect } from "next/navigation"
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
   baseUrl?: string | undefined
@@ -57,14 +56,34 @@ class SessionToken {
 export const clientSessionToken = new SessionToken()
 
 const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: string, options?: CustomOptions | undefined) => {
-  const body = options?.body ? (options.body instanceof FormData ? options.body : JSON.stringify(options.body)) : undefined
-  const baseHeaders: Record<string, string> = body instanceof FormData ? {} : { 'Content-Type': 'application/json' }
+  let body: BodyInit | undefined
+  const baseHeaders: Record<string, string> = {}
 
-  // Chỉ thêm Authorization từ clientSessionToken nếu đang ở client-side và không có Authorization trong options.headers
-  if (typeof window !== 'undefined' && clientSessionToken.value) {
+  if (options?.body) {
+    if (options.body instanceof FormData) {
+      // FormData: browser sẽ tự động set Content-Type với boundary
+      body = options.body
+      // Không set Content-Type, để browser tự động set
+    } else if (options.body instanceof URLSearchParams) {
+      // URLSearchParams: convert sang string và set Content-Type
+      body = options.body.toString()
+      baseHeaders['Content-Type'] = 'application/x-www-form-urlencoded'
+    } else {
+      // Object hoặc string khác: JSON.stringify
+      body = JSON.stringify(options.body)
+      baseHeaders['Content-Type'] = 'application/json'
+    }
+  }
+
+  // Chỉ thêm Authorization từ localStorage nếu đang ở client-side và không có Authorization trong options.headers
+  if (typeof window !== 'undefined') {
     const hasAuth = options?.headers && 'Authorization' in options.headers
     if (!hasAuth) {
-      baseHeaders.Authorization = `Bearer ${clientSessionToken.value}`
+      // Lấy token từ localStorage (key là 'accessToken' theo auth-store)
+      const accessToken = localStorage.getItem('accessToken') || localStorage.getItem('access_token')
+      if (accessToken) {
+        baseHeaders.Authorization = `Bearer ${accessToken}`
+      }
     }
   }
 
@@ -78,7 +97,7 @@ const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url:
     ...options,
     headers: {
       ...baseHeaders,
-      ...options?.headers
+      ...(options?.headers || {})
     },
     body,
     method
@@ -110,9 +129,6 @@ const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url:
         })
         clientSessionToken.value = ''
         // location.href = '/login'
-      } else {
-        const sessionToken = (options?.headers as any)?.Authorization?.split('Bearer ')[1]
-        redirect(`/logout?sessionToken=${sessionToken}`)
       }
     } else {
       throw new HttpError(data)

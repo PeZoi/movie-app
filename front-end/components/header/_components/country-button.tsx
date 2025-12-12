@@ -6,7 +6,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { countryAPI } from '@/services/country-service';
+import { countryService } from '@/services/country-service';
 import { useGlobalStore } from '@/store';
 import { CountryType } from '@/types/country-type';
 import { ChevronDown } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function CountryButton() {
 
   useEffect(() => {
     const fetchCountries = async () => {
-      const { data } = await countryAPI.getAllCountries();
+      const { data } = await countryService.getAllCountries();
       setCountryList(data?.result || []);
     };
     fetchCountries();

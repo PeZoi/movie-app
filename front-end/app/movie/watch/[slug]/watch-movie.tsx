@@ -1,12 +1,11 @@
 'use client';
 
-import Comment from '@/components/comment';
-import CommentForm from '@/components/comment-form';
 import EpisodeList from '@/app/movie/watch/_components/episode-list';
 import MovieSuggestItem from '@/app/movie/watch/_components/movie-suggest-item';
 import AvatarList from '@/components/avatar-list';
 import BadgeCategory from '@/components/badge-category';
 import BadgeCustom from '@/components/badge-custom';
+import CommentList from '@/components/comment/comment-list';
 import { O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
 import { movieService } from '@/services/movie-service';
 import { MovieType } from '@/types/movie-type';
@@ -18,7 +17,6 @@ import {
   Heart,
   LoaderCircle,
   MessageCircleMore,
-  MessageSquareMore,
   Plus,
   Share,
   TextAlignStart,
@@ -236,18 +234,7 @@ export default function WatchMoviePage() {
                 <MessageCircleMore size={20} strokeWidth={3} className="text-primary-color" /> Bình luận
               </p>
 
-              {/* Form bình luận */}
-              <CommentForm />
-
-              {/* Danh sách bình luận */}
-              <div className="mt-10 bg-[#272932] rounded-lg py-13 flex flex-col items-center justify-center gap-2 text-[#aaa]">
-                <MessageSquareMore size={30} strokeWidth={2} />
-                <p className="text-base font-medium">Chưa có bình luận nào</p>
-              </div>
-              <div className="mt-4 space-y-6">
-                <Comment hasChildren={true} />
-                <Comment hasChildren={true} />
-              </div>
+              {movie?._id && <CommentList movieId={movie?._id} episodeNumber={episodeCurrent?.episode} />}
             </div>
           </div>
           <div className="col-span-3">
