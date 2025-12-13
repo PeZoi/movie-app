@@ -180,7 +180,7 @@ export class MovieService {
     }
   }
 
-  async getMovieBySlug(slug: string) {
+  async getMovieBySlug(slug: string, userId?: string | null) {
     const i18n = I18nContext.current();
 
     let result;
@@ -205,7 +205,7 @@ export class MovieService {
 
     const movieId = result._id;
 
-    const [totalComment, totalReview, avgRating] = await Promise.all([
+    const [totalComment, totalReview, avgRating, userReview] = await Promise.all([
       this.CommentModel.countDocuments({
         movie_id: movieId,
         is_review: false,
@@ -218,6 +218,15 @@ export class MovieService {
         { $match: { movie_id: movieId } },
         { $group: { _id: null, average: { $avg: '$point' } } },
       ]),
+
+      userId
+        ? this.ReviewModel.findOne({
+            movie_id: movieId,
+            user_id: userId,
+          })
+            .select('_id content point createdAt updatedAt')
+            .lean()
+        : null,
     ]);
 
     let avgRatingValue = 0;
@@ -228,6 +237,8 @@ export class MovieService {
     result.item.total_comment = totalComment;
     result.item.total_review = totalReview;
     result.item.avg_rating = avgRatingValue;
+    result.item.is_review = !!userReview;
+    result.item.review_info = userReview || null;
 
     return {
       message: await i18n.t('movie.GET_SUCCESS'),

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, Req } from '@nestjs/common';
 
 import { MovieService } from './movie.service';
 import { Public } from '@/decorator/customize';
@@ -45,8 +45,9 @@ export class MovieController {
 
   @Get(':slug')
   @Public()
-  async getMovieById(@Param('slug') slug: string) {
-    return this.movieService.getMovieBySlug(slug);
+  async getMovieById(@Param('slug') slug: string, @Req() req) {
+    const userId = req.user?.id ?? null;
+    return this.movieService.getMovieBySlug(slug, userId);
   }
 
   @Post(':slug')
