@@ -16,6 +16,8 @@ import { Episodes } from '@/modules/episodes/schema/episodes.schema';
 import { Images } from '@/modules/image/schema/image.schema';
 import { Actor } from '@/modules/actor/schemas/actor.schema';
 import { MovieFilterDto } from '@/modules/movie/dto/filter-movie.dto';
+import { Comment } from '@/modules/comment/schemas/comment.schema';
+import { Review } from '@/modules/comment/schemas/review.schema';
 
 @Injectable()
 export class MovieService {
@@ -26,6 +28,8 @@ export class MovieService {
     @InjectModel(Episodes.name) private EpisodesModel: Model<Episodes>,
     @InjectModel(Images.name) private ImagesModel: Model<Images>,
     @InjectModel(Actor.name) private ActorModel: Model<Actor>,
+    @InjectModel(Comment.name) private CommentModel: Model<Comment>,
+    @InjectModel(Review.name) private ReviewModel: Model<Review>,
     private readonly ActorService: ActorService,
     private readonly configService: ConfigService,
   ) {}
@@ -198,6 +202,32 @@ export class MovieService {
     if (!result) {
       throw new NotFoundException(i18n.t('movie.MOVIE_NOT_FOUND'));
     }
+
+    const movieId = result._id;
+
+    const [totalComment, totalReview, avgRating] = await Promise.all([
+      this.CommentModel.countDocuments({
+        movie_id: movieId,
+        is_review: false,
+      }),
+      this.CommentModel.countDocuments({
+        movie_id: movieId,
+        is_review: true,
+      }),
+      this.ReviewModel.aggregate([
+        { $match: { movie_id: movieId } },
+        { $group: { _id: null, average: { $avg: '$point' } } },
+      ]),
+    ]);
+
+    let avgRatingValue = 0;
+
+    if (avgRating.length > 0 && avgRating[0].average != null) {
+      avgRatingValue = Number(avgRating[0].average) / totalReview;
+    }
+    result.item.total_comment = totalComment;
+    result.item.total_review = totalReview;
+    result.item.avg_rating = avgRatingValue;
 
     return {
       message: await i18n.t('movie.GET_SUCCESS'),

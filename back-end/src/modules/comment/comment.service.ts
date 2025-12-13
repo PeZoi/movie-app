@@ -42,6 +42,16 @@ export class CommentService {
         point: dto.point,
         content: dto.content,
       });
+
+      const existingComment = await this.commentModel.findOne({
+        movie_id: dto.movie_id,
+        user_id: dto.user_id,
+        is_review: true,
+      });
+
+      if (existingComment) {
+        throw new Error('Bạn đã đánh giá phim này');
+      }
     }
 
     if (dto.parent_id) {
@@ -88,7 +98,7 @@ export class CommentService {
     };
   }
 
-  async getCommentsById(query, user_id: string) {
+  async getCommentsById(query, user_id?: string | null) {
     const { movie_id, season_number, episode_number, parent_id, is_review = false, current = 1, pageSize = 20 } = query;
     const sortOption = parent_id != null ? ({ createdAt: 1 } as any) : ({ createdAt: -1 } as any);
     const filter: any = {

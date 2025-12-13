@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Req, Query, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import { CommentService } from './comment.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { Public } from '@/decorator/customize';
+
+import { CommentService } from './comment.service';
 
 @Controller('comment')
 export class CommentController {
@@ -43,6 +45,7 @@ export class CommentController {
   }
 
   @Get('list')
+  @Public()
   async getCommentsById(
     @Query()
     query: {
@@ -57,7 +60,7 @@ export class CommentController {
     @Req()
     req,
   ) {
-    const userId = req.user.id;
+    const userId = req.user?.id ?? null;
     return this.commentService.getCommentsById(query, userId);
   }
 }
