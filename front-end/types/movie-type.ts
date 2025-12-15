@@ -1,5 +1,6 @@
 import { ActorType } from "@/types/actor-type";
 import { CategoryType } from "@/types/category-type";
+import { ReviewInfo } from "@/types/comment-type";
 import { CountryType } from "@/types/country-type";
 
 // Image size URLs for backdrop
@@ -68,6 +69,11 @@ export interface MovieItem {
   lang: string;
   year: number;
   imdb: ImdbType;
+  total_comment: number;
+  total_review: number;
+  avg_rating: number;
+  is_review: boolean;
+  review_info: ReviewInfo;
   category: CategoryType[];
   country: CountryType[];
   episodes: EpisodeType[];

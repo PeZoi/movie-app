@@ -3,12 +3,13 @@
 import CommentForm from '@/components/comment/comment-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { RATING_OPTIONS } from '@/constants/constants';
 import { RO_PHIM_IMG_URL } from '@/constants/env';
 import dayjs from '@/lib/dayjs';
 import { commentService } from '@/services/comment-service';
 import { CommentType } from '@/types/comment-type';
 import { ChevronDown, Ellipsis, Loader2, Reply, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { toast } from 'sonner';
 
 interface CommentProps {
@@ -18,7 +19,6 @@ interface CommentProps {
   parentCommentId?: string;
   setParentCommentChildren?: Dispatch<SetStateAction<CommentType[]>>;
   fetchParentCommentChildren?: () => Promise<void> | void;
-  setParentComment?: Dispatch<SetStateAction<CommentType>>;
   episodeNumber?: string | number | undefined;
 }
 
@@ -83,6 +83,8 @@ export default function Comment({
     }
   };
 
+  const rating = RATING_OPTIONS?.find((rating) => rating.value === comment?.review_info?.point);
+
   return (
     <div className="flex gap-4">
       <Avatar className="size-[38px]">
@@ -91,6 +93,12 @@ export default function Comment({
       </Avatar>
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3 h-fit">
+          {comment?.review_info && (
+            <div className="inline-flex items-center gap-2 w-fit px-2 py-1.5 bg-[#3556b6] rounded-full">
+              <span className="text-[16px]">{rating?.emoji}</span>
+              <span className="font-medium text-white text-xs">{rating?.label}</span>
+            </div>
+          )}
           <span className="font-medium text-white">{comment?.user_info?.name}</span>
           <span className="text-[11px] text-[#aaa]">
             {comment?.createdAt ? dayjs(comment.createdAt).fromNow() : ''}

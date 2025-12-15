@@ -20,6 +20,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, accessToken });
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('accessToken', accessToken);
+    // Lưu vào cookie để server component có thể đọc
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `accessToken=${accessToken}; expires=${expires}; path=/`;
   },
   loadDataFromLocalStorage: () => {
     const user = localStorage.getItem('user');
@@ -32,5 +35,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, accessToken: null });
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   },
 }));

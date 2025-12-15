@@ -6,6 +6,9 @@ import AvatarList from '@/components/avatar-list';
 import BadgeCategory from '@/components/badge-category';
 import BadgeCustom from '@/components/badge-custom';
 import CommentList from '@/components/comment/comment-list';
+import DialogReview from '@/components/review/dialog-review';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
 import { movieService } from '@/services/movie-service';
 import { MovieType } from '@/types/movie-type';
@@ -17,6 +20,7 @@ import {
   Heart,
   LoaderCircle,
   MessageCircleMore,
+  MessageSquareMore,
   Plus,
   Share,
   TextAlignStart,
@@ -234,11 +238,52 @@ export default function WatchMoviePage() {
                 <MessageCircleMore size={20} strokeWidth={3} className="text-primary-color" /> Bình luận
               </p>
 
-              {movie?._id && <CommentList movieId={movie?._id} episodeNumber={episodeCurrent?.episode} />}
+              {movie?._id && (
+                <div id="comment" className="mt-5">
+                  <Tabs defaultValue="comment">
+                    <TabsList className="inline-flex h-10 items-center justify-center rounded-lg bg-[#2A2A2A] p-1 text-muted-foreground">
+                      <TabsTrigger
+                        value="comment"
+                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm data-[state=inactive]:text-white cursor-pointer"
+                      >
+                        Bình luận
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="review"
+                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm data-[state=inactive]:text-white cursor-pointer"
+                      >
+                        Đánh giá
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="comment">
+                      <CommentList movieId={movie?._id || ''} type="comment" />
+                    </TabsContent>
+                    <TabsContent value="review">
+                      <CommentList movieId={movie?._id || ''} type="review" />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              )}
             </div>
           </div>
           <div className="col-span-3">
             <div className="h-full border-l border-white/10 p-10">
+              <div className="flex items-center justify-between border-white/10 border-b pb-10 mb-10">
+                <Link
+                  href={`#comment`}
+                  className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[120px] cursor-pointer hover:text-primary-color-hover text-white"
+                >
+                  <MessageSquareMore size={14} strokeWidth={3.5} />
+                  <span className="text-sm">Bình luận</span>
+                </Link>
+                <DialogReview
+                  movieId={movie?._id || ''}
+                  movieTitle={movie?.item?.name}
+                  rating={movie?.item?.avg_rating}
+                  reviewCount={movie?.item?.total_review}
+                  reviewInfo={movie?.item?.review_info}
+                />
+              </div>
               <p className="text-2xl font-medium flex items-center gap-2">Diễn viên</p>
               <div className="grid grid-cols-3 place-items-center mt-5 gap-4 border-white/10 border-b pb-10 mb-10">
                 <AvatarList actors={movie?.item?.actor || []} />

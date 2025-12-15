@@ -55,6 +55,33 @@ class SessionToken {
 
 export const clientSessionToken = new SessionToken()
 
+const ACCESS_TOKEN_KEYS = ['accessToken', 'access_token']
+
+const getClientAccessToken = () => {
+  const tokens = ACCESS_TOKEN_KEYS.map((key) => (typeof window !== 'undefined' ? localStorage.getItem(key) : null))
+  return tokens.find(Boolean) || ''
+}
+
+const getServerAccessToken = async () => {
+  // Lazy import to avoid bundling server-only module into client build
+  try {
+    const { cookies } = await import('next/headers')
+    const cookieStore = await cookies()
+    const tokens = ACCESS_TOKEN_KEYS.map((key) => cookieStore.get(key)?.value || '')
+    return tokens.find((token) => token) || ''
+  } catch {
+    // In case this is called outside Next.js server context, just ignore
+    return ''
+  }
+}
+
+const getAccessToken = async () => {
+  if (typeof window !== 'undefined') {
+    return getClientAccessToken()
+  }
+  return getServerAccessToken()
+}
+
 const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: string, options?: CustomOptions | undefined) => {
   let body: BodyInit | undefined
   const baseHeaders: Record<string, string> = {}
@@ -75,15 +102,12 @@ const request = async <Response>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url:
     }
   }
 
-  // Chỉ thêm Authorization từ localStorage nếu đang ở client-side và không có Authorization trong options.headers
-  if (typeof window !== 'undefined') {
-    const hasAuth = options?.headers && 'Authorization' in options.headers
-    if (!hasAuth) {
-      // Lấy token từ localStorage (key là 'accessToken' theo auth-store)
-      const accessToken = localStorage.getItem('accessToken') || localStorage.getItem('access_token')
-      if (accessToken) {
-        baseHeaders.Authorization = `Bearer ${accessToken}`
-      }
+  // Thêm Authorization tự động cả client và server nếu chưa truyền sẵn
+  const hasAuth = options?.headers && 'Authorization' in options.headers
+  if (!hasAuth) {
+    const accessToken = await getAccessToken()
+    if (accessToken) {
+      baseHeaders.Authorization = `Bearer ${accessToken}`
     }
   }
 

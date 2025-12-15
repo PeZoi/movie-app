@@ -26,7 +26,7 @@ export default function EpisodeList({ episodes, setEpisodeCurrent }: EpisodeList
               params.set('ep', episode.name);
               router.replace(`/movie/watch/${slug}?${params.toString()}`, { scroll: false });
             }}
-            className={`flex justify-center items-center gap-2 bg-[#282B3A] rounded-sm h-[50px] hover:text-primary-color transition-all font-medium cursor-pointer ${searchParams.get('ep') === episode.name ? 'text-black bg-primary-color' : ''}`}
+            className={`flex justify-center items-center gap-2 bg-[#282B3A] rounded-sm h-[50px] hover:opacity-80 transition-all font-medium cursor-pointer ${searchParams.get('ep') === episode.name ? 'text-black bg-primary-color' : ''}`}
           >
             <Play size={10} strokeWidth={3.5} />
             <span className="text-base">Tập {episode.name}</span>

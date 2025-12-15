@@ -9,6 +9,21 @@ export interface UserInfo {
   avatar: Avatar;
 }
 
+export type RatingOption = {
+  emoji_url: string;
+  emoji: string;
+  label: string;
+  value: number;
+};
+
+export interface ReviewInfo {
+  _id: string;
+  point: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CommentType {
   _id: string;
   movie_id: string;
@@ -28,6 +43,8 @@ export interface CommentType {
   user_info: UserInfo;
   is_like: boolean;
   is_dislike: boolean;
+  is_review: boolean;
+  review_info: ReviewInfo;
 }
 
 export interface CreateCommentRequestBody {
@@ -37,4 +54,6 @@ export interface CreateCommentRequestBody {
   content: string;
   episode_number: number | null;
   is_spoil: boolean;
+  is_review?: boolean;
+  point?: number | null;
 }

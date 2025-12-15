@@ -10,18 +10,19 @@ import { useCallback, useEffect, useState } from 'react';
 type CommentListProps = {
   movieId: string;
   episodeNumber?: string | number | undefined;
+  type: 'comment' | 'review';
 };
 
-export default function CommentList({ movieId, episodeNumber }: CommentListProps) {
+export default function CommentList({ movieId, episodeNumber, type = 'comment' }: CommentListProps) {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchComments = useCallback(async () => {
     setIsLoading(true);
-    const response = await commentService.getComments(movieId, undefined, episodeNumber);
+    const response = await commentService.getComments(movieId, undefined, episodeNumber, type);
     setIsLoading(false);
     setComments((response.data?.result as CommentType[]) || []);
-  }, [movieId, episodeNumber]);
+  }, [movieId, episodeNumber, type]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -29,7 +30,9 @@ export default function CommentList({ movieId, episodeNumber }: CommentListProps
   }, [movieId, episodeNumber, fetchComments]);
   return (
     <>
-      <CommentForm movieId={movieId} type="comment" setComments={setComments} episodeNumber={episodeNumber} />
+      {type === 'comment' && (
+        <CommentForm movieId={movieId} type="comment" setComments={setComments} episodeNumber={episodeNumber} />
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center mt-10">
@@ -38,7 +41,7 @@ export default function CommentList({ movieId, episodeNumber }: CommentListProps
       ) : comments.length === 0 ? (
         <div className="mt-10 bg-[#272932] rounded-lg py-13 flex flex-col items-center justify-center gap-2 text-[#aaa]">
           <MessageSquareMore size={30} strokeWidth={2} />
-          <p className="text-base font-medium">Chưa có bình luận nào</p>
+          <p className="text-base font-medium">Chưa có {type === 'comment' ? 'bình luận' : 'đánh giá'} nào</p>
         </div>
       ) : (
         <div className="mt-10 space-y-6">

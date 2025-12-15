@@ -4,6 +4,7 @@ import BadgeCategory from '@/components/badge-category';
 import BadgeCustom from '@/components/badge-custom';
 import CommentList from '@/components/comment/comment-list';
 import HoverCardMovie from '@/components/hover-card-movie';
+import DialogReview from '@/components/review/dialog-review';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { IMAGE_TMDB_ORIGINAL, O_PHIM_IMG_MOVIE_URL } from '@/constants/env';
@@ -25,6 +26,7 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
     const response = await movieService.getMovieBySlug(slug as string);
     if (response.statusCode === 200 && response.data?.result) {
       movie = response.data.result?.[0] as MovieType;
+      console.log({ movie });
     } else {
       notFound();
     }
@@ -141,35 +143,44 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             </div>
           </div>
           <div className="flex-1 p-10 flex flex-col rounded-[3rem_1.25rem_1.25rem_1.25rem] bg-bg-base">
-            <div className="flex items-center gap-12">
-              <Link
-                href={`/movie/watch/${movie?.slug}`}
-                className="w-fit h-[60px] text-sm text-black flex items-center gap-2 bg-primary-color-gradient px-8 rounded-full justify-center hover:opacity-90 shadow-primary"
-              >
-                <Play size={18} strokeWidth={3} />
-                <span className="text-lg font-bold text-nowrap">Xem ngay</span>
-              </Link>
-              <div className="flex items-center gap-5">
-                <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
-                  <Heart size={14} strokeWidth={3.5} />
-                  <span className="text-sm">Yêu thích</span>
-                </div>
-                <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
-                  <Plus size={14} strokeWidth={3.5} />
-                  <span className="text-sm">Danh sách</span>
-                </div>
-                <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
-                  <Share size={14} strokeWidth={3.5} />
-                  <span className="text-sm">Chia sẻ</span>
-                </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-12">
                 <Link
-                  href={`#comment`}
-                  className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white"
+                  href={`/movie/watch/${movie?.slug}`}
+                  className="w-fit h-[60px] text-sm text-black flex items-center gap-2 bg-primary-color-gradient px-8 rounded-full justify-center hover:opacity-90 shadow-primary"
                 >
-                  <MessageSquareMore size={14} strokeWidth={3.5} />
-                  <span className="text-sm">Bình luận</span>
+                  <Play size={18} strokeWidth={3} />
+                  <span className="text-lg font-bold text-nowrap">Xem ngay</span>
                 </Link>
+                <div className="flex items-center gap-5">
+                  <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
+                    <Heart size={14} strokeWidth={3.5} />
+                    <span className="text-sm">Yêu thích</span>
+                  </div>
+                  <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
+                    <Plus size={14} strokeWidth={3.5} />
+                    <span className="text-sm">Danh sách</span>
+                  </div>
+                  <div className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white">
+                    <Share size={14} strokeWidth={3.5} />
+                    <span className="text-sm">Chia sẻ</span>
+                  </div>
+                  <Link
+                    href={`#comment`}
+                    className="flex flex-col justify-center items-center p-[.6rem] gap-1.5 hover:bg-bg-base-2 rounded-lg min-w-[80px] cursor-pointer hover:text-primary-color-hover text-white"
+                  >
+                    <MessageSquareMore size={14} strokeWidth={3.5} />
+                    <span className="text-sm">Bình luận</span>
+                  </Link>
+                </div>
               </div>
+              <DialogReview
+                movieId={movie?._id || ''}
+                movieTitle={movie?.item?.name}
+                rating={movie?.item?.avg_rating}
+                reviewCount={movie?.item?.total_review}
+                reviewInfo={movie?.item?.review_info}
+              />
             </div>
             <Tabs defaultValue="episodes" className="mt-10 w-full ">
               <TabsList className="w-full border-b border-border-color bg-transparent h-auto p-0 gap-10 flex items-center justify-start pl-5 rounded-none">
@@ -282,7 +293,28 @@ export default async function MovieDetailPage({ params }: { params: { slug: stri
             <Separator className="my-14 bg-border-color" />
 
             <div id="comment">
-              <CommentList movieId={movie?._id || ''} />
+              <Tabs defaultValue="comment">
+                <TabsList className="inline-flex h-10 items-center justify-center rounded-lg bg-[#2A2A2A] p-1 text-muted-foreground">
+                  <TabsTrigger
+                    value="comment"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm data-[state=inactive]:text-white cursor-pointer"
+                  >
+                    Bình luận
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="review"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm data-[state=inactive]:text-white cursor-pointer"
+                  >
+                    Đánh giá
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="comment">
+                  <CommentList movieId={movie?._id || ''} type="comment" />
+                </TabsContent>
+                <TabsContent value="review">
+                  <CommentList movieId={movie?._id || ''} type="review" />
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </div>
