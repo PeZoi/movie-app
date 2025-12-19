@@ -27,6 +27,7 @@ import { ResponseInterceptor } from '@/common/interceptors/response.interceptor'
 import { ImageModule } from './modules/image/image.module';
 import { CollectionModule } from './modules/collection/collection.module';
 import { JwtAuthGuard } from '@/modules/auth/passport/jwt-auth.guard';
+import { RoomModule } from './modules/room/room.module';
 
 @Module({
   controllers: [AppController],
@@ -82,6 +83,7 @@ import { JwtAuthGuard } from '@/modules/auth/passport/jwt-auth.guard';
     EpisodesModule,
     ImageModule,
     CollectionModule,
+    RoomModule,
   ],
 })
 export class AppModule {}
